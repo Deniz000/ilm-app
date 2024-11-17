@@ -2,6 +2,7 @@ package com.ilim.app.entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -24,7 +25,7 @@ public class Message {
     private String messageContent;
 
     @Column(name = "created_at", nullable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     // Getters and Setters
     public Long getId() {
@@ -59,11 +60,11 @@ public class Message {
         this.messageContent = messageContent;
     }
 
-    public String getTimestamp() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setTimestamp(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
