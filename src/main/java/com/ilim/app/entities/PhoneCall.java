@@ -1,11 +1,13 @@
 package com.ilim.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "phonecall")
+@Table(name = "phonecalls")
 public class PhoneCall {
 
     @Id
@@ -14,14 +16,16 @@ public class PhoneCall {
 
     @ManyToOne
     @JoinColumn(name = "caller_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private User caller;
 
     @ManyToOne
     @JoinColumn(name = "receiver_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
     private User receiver;
 
     @Column(name = "call_time", nullable = false)
-    private String callTime;
+    private LocalDateTime callTime;
 
     @Column(name = "duration")
     private int duration;
@@ -51,11 +55,11 @@ public class PhoneCall {
         this.receiver = receiver;
     }
 
-    public String getCallTime() {
+    public LocalDateTime getCallTime() {
         return callTime;
     }
 
-    public void setCallTime(String callTime) {
+    public void setCallTime(LocalDateTime callTime) {
         this.callTime = callTime;
     }
 
@@ -63,7 +67,7 @@ public class PhoneCall {
         return duration;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 

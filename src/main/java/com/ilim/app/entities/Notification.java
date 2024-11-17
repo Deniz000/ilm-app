@@ -15,15 +15,23 @@ public class Notification {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created_at", nullable = false)  // Timestamp replaced with createdAt
-    private LocalDateTime createdAt;  // Using LocalDateTime instead of String
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private NotificationStatus status;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id",referencedColumnName = "id", nullable = false)
     private User user;
+
+    public enum NotificationStatus {
+        PENDING,
+        SENT,
+        READ
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -50,11 +58,11 @@ public class Notification {
         this.createdAt = createdAt;
     }
 
-    public String getStatus() {
+    public NotificationStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(NotificationStatus status) {
         this.status = status;
     }
 
@@ -87,7 +95,7 @@ public class Notification {
                 ", content='" + content + '\'' +
                 ", createdAt=" + createdAt +  // Updated field in toString
                 ", status='" + status + '\'' +
-                ", user=" + user +
+                ", user=" + (user != null ? user.getId() : "null") +
                 '}';
     }
 }

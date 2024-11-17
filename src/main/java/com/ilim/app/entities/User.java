@@ -3,8 +3,10 @@ package com.ilim.app.entities;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Set;
+
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -24,8 +26,7 @@ public class User {
             mappedBy = "user",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
-    @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
-    private Membership membership;
+    private Set<Membership> membership;
 
     // Getters and Setters
     public Long getId() {
@@ -60,11 +61,11 @@ public class User {
         this.password = password;
     }
 
-    public Membership getRole() {
+    public Set<Membership> getRole() {
         return membership;
     }
 
-    public void setRole(Membership membership) {
+    public void setRole(Set<Membership> membership) {
         this.membership = membership;
     }
 

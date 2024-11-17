@@ -3,7 +3,7 @@ package com.ilim.app.entities;
 import jakarta.persistence.*;
 import java.util.Objects;
 @Entity
-@Table(name = "role")
+@Table(name = "memberships")
 public class Membership {
 
     @Id
@@ -15,11 +15,11 @@ public class Membership {
     private RoleName name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id",referencedColumnName = "id", nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id", nullable = false)
+    @JoinColumn(name = "community_id", referencedColumnName = "id",nullable = false)
     private Community community;
 
     // Getters and Setters

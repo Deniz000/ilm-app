@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "community")
+@Table(name = "communities")
 public class Community {
 
     @Id
@@ -25,8 +25,8 @@ public class Community {
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Classroom> classrooms = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "created_by", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by",referencedColumnName = "id", nullable = false)
     private User createdBy; // Topluluğu oluşturan kullanıcı
 
     @OneToMany(mappedBy = "community", cascade = CascadeType.ALL, orphanRemoval = true)

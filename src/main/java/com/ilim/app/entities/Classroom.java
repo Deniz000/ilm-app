@@ -8,7 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "classroom")
+@Table(name = "classrooms")
 public class Classroom {
 
     @Id
@@ -19,7 +19,7 @@ public class Classroom {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "community_id", nullable = false)
+    @JoinColumn(name = "community_id",referencedColumnName = "id", nullable = false)
     private Community community; // Classroom'un bağlı olduğu Community
 
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)

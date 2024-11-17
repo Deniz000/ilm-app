@@ -1,10 +1,11 @@
-package com.ilm.app.entities;
+package com.ilim.app.entities;
+
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
-@Table(name = "message")
+@Table(name = "messages")
 public class Message {
 
     @Id
@@ -22,8 +23,8 @@ public class Message {
     @Column(name = "message_content", nullable = false)
     private String messageContent;
 
-    @Column(name = "timestamp", nullable = false)
-    private String timestamp;
+    @Column(name = "created_at", nullable = false)
+    private String createdAt;
 
     // Getters and Setters
     public Long getId() {
@@ -59,11 +60,11 @@ public class Message {
     }
 
     public String getTimestamp() {
-        return timestamp;
+        return createdAt;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestamp(String createdAt) {
+        this.createdAt = createdAt;
     }
 
     // toString
@@ -74,7 +75,7 @@ public class Message {
                 ", sender=" + sender +
                 ", receiver=" + receiver +
                 ", messageContent='" + messageContent + '\'' +
-                ", timestamp='" + timestamp + '\'' +
+                ", createdAt='" + createdAt + '\'' +
                 '}';
     }
 

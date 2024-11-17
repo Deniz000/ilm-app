@@ -6,7 +6,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "lesson")
+@Table(name = "lessons")
 public class Lesson {
 
     @Id
@@ -24,7 +24,7 @@ public class Lesson {
     private Category category;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "classroom_id", nullable = false)
+    @JoinColumn(name = "classroom_id",referencedColumnName = "id", nullable = false)
     private Classroom classroom;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -2,10 +2,12 @@ package com.ilim.app.entities;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category {
 
     @Id
@@ -17,6 +19,18 @@ public class Category {
 
     @Column(name = "description")
     private String description;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id")
+    private Set<Lesson> lessons = new HashSet<>();
+
+    public Set<Lesson> getLesson() {
+        return lessons;
+    }
+
+    public void setLesson(Set<Lesson> lessons) {
+        this.lessons = lessons;
+    }
 
     // Getters and Setters
     public Long getId() {

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Table(name = "attendances")
 public class Attendance {
 
     @Id
@@ -14,11 +15,11 @@ public class Attendance {
     private String status;
 
     @ManyToOne
-    @JoinColumn(name = "lesson_id")
+    @JoinColumn(name = "lesson_id", referencedColumnName = "id")
     private Lesson lesson;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "id")
     private User user;
 
     // Getters and Setters

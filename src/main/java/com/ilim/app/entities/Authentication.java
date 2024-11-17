@@ -1,6 +1,7 @@
 package com.ilim.app.entities;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
@@ -12,28 +13,28 @@ public class Authentication {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user; // User sınıfı ile ilişki (Many-to-One)
 
-    @Column(name = "token", nullable = false)
-    private String token;
+    @Column(name = "token", nullable = false, unique = true)
+    private String token; // Token değeri
 
     @Column(name = "created_at", nullable = false)
-    private String createdAt;
+    private LocalDateTime createdAt; // Token oluşturulma tarihi
 
-    @Column(name = "expires_at")
-    private String expiresAt;
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt; // Token geçerlilik süresi
 
-    // Constructor
-    public Authentication(Long userId, String token, String createdAt, String expiresAt) {
-        this.userId = userId;
+    // Constructors
+    public Authentication() {
+    }
+
+    public Authentication(User user, String token, LocalDateTime createdAt, LocalDateTime expiresAt) {
+        this.user = user;
         this.token = token;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;
-    }
-
-    public Authentication() {
-
     }
 
     // Getters and Setters
@@ -45,12 +46,12 @@ public class Authentication {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getToken() {
@@ -61,50 +62,48 @@ public class Authentication {
         this.token = token;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getExpiresAt() {
+    public LocalDateTime getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(String expiresAt) {
+    public void setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
     }
 
-    // toString Method
+    // toString, equals, and hashCode methods
     @Override
     public String toString() {
         return "Authentication{" +
                 "id=" + id +
-                ", userId=" + userId +
+                ", user=" + (user != null ? user.getId() : null) +
                 ", token='" + token + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", expiresAt='" + expiresAt + '\'' +
+                ", createdAt=" + createdAt +
+                ", expiresAt=" + expiresAt +
                 '}';
     }
 
-    // equals Method
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Authentication that = (Authentication) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(userId, that.userId) &&
+                Objects.equals(user, that.user) &&
                 Objects.equals(token, that.token) &&
                 Objects.equals(createdAt, that.createdAt) &&
                 Objects.equals(expiresAt, that.expiresAt);
     }
 
-    // hashCode Method
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, token, createdAt, expiresAt);
+        return Objects.hash(id, user, token, createdAt, expiresAt);
     }
 }
