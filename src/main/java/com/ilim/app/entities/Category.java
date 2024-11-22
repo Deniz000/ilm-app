@@ -1,13 +1,17 @@
 package com.ilim.app.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Data
 @Entity
 @Table(name = "categories")
+@NoArgsConstructor
 public class Category {
 
     @Id
@@ -24,63 +28,6 @@ public class Category {
     @JoinColumn(name = "lesson_id")
     private Set<Lesson> lessons = new HashSet<>();
 
-    public Set<Lesson> getLesson() {
-        return lessons;
-    }
-
-    public void setLesson(Set<Lesson> lessons) {
-        this.lessons = lessons;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    // toString
-    @Override
-    public String toString() {
-        return "Category{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
-
-    // equals
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Category category = (Category) o;
-        return Objects.equals(id, category.id);
-    }
-
-        // hashCode
-        @Override
-        public int hashCode() {
-            return Objects.hash(id);
-        }
     }
 
 

@@ -1,11 +1,15 @@
 package com.ilim.app.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
+@Data
 @Entity
 @Table(name = "materials")
+@NoArgsConstructor
 public class Material {
 
     @Id
@@ -23,62 +27,4 @@ public class Material {
     private Lesson lesson;
 
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Lesson getLesson() {
-        return lesson;
-    }
-
-    public void setLesson(Lesson lesson) {
-        this.lesson = lesson;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFileUrl() {
-        return fileUrl;
-    }
-
-    public void setFileUrl(String fileUrl) {
-        this.fileUrl = fileUrl;
-    }
-
-    // toString
-    @Override
-    public String toString() {
-        return "Material{" +
-                "id=" + id +
-                ", lesson=" + lesson +
-                ", name='" + name + '\'' +
-                ", fileUrl='" + fileUrl + '\'' +
-                '}';
-    }
-
-    // equals
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Material material = (Material) o;
-        return Objects.equals(id, material.id);
-    }
-
-    // hashCode
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

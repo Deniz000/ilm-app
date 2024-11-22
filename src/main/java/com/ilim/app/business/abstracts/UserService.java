@@ -1,13 +1,17 @@
 package com.ilim.app.business.abstracts;
 
-import com.ilim.app.entities.User;
+import com.ilim.app.entities.UserEntity;
 
 import java.util.List;
 
 public interface UserService {
-    User createUser(User user);
-    User getUserById(Long id);
-    User updateUser(Long id, User userDetails);
+    UserEntity createUser(UserEntity user);
+
+    UserEntity getUserById(Long id);
+
+    UserEntity updateUser(Long id, UserEntity userDetails);
+
     void deleteUser(Long id);
-    List<User> getAllUsers();
+
+    List<UserEntity> getAllUsers();
 }

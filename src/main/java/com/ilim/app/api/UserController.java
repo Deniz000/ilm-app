@@ -1,7 +1,7 @@
 package com.ilim.app.api;
 
 import com.ilim.app.business.abstracts.UserService;
-import com.ilim.app.entities.User;
+import com.ilim.app.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/UserEntitys")
 public class UserController {
 
     private final UserService userService;
@@ -20,35 +20,32 @@ public class UserController {
 
     // Kullanıcı oluşturma
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    public ResponseEntity<UserEntity> createUserEntity(@RequestBody UserEntity UserEntity) {
+        UserEntity createdUserEntity = userService.createUser(UserEntity);
+        return new ResponseEntity<>(createdUserEntity, HttpStatus.CREATED);
     }
 
-    // Belirli bir kullanıcıyı ID'ye göre getirme
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
+    public ResponseEntity<UserEntity> getUserEntityById(@PathVariable Long id) {
+        UserEntity userEntity = userService.getUserById(id);
+        return ResponseEntity.ok(userEntity); // json veriyle birlikte döndürmek
     }
 
-    // Tüm kullanıcıları listeleme
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserEntity>> getAllUserEntitys() {
+        List<UserEntity> UserEntity = userService.getAllUsers();
+        return ResponseEntity.ok(UserEntity);
     }
 
-    // Kullanıcı güncelleme
     @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User userDetails) {
-        User updatedUser = userService.updateUser(id, userDetails);
-        return ResponseEntity.ok(updatedUser);
+    public ResponseEntity<UserEntity> updateUserEntity(@PathVariable Long id, @RequestBody UserEntity UserEntityDetails) {
+        UserEntity updatedUserEntity = userService.updateUser(id, UserEntityDetails);
+        return ResponseEntity.ok(updatedUserEntity);
     }
 
-    // Kullanıcı silme
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUserEntity(@PathVariable Long id) {
+        if (id == null) return ResponseEntity.badRequest().build();
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

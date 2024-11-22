@@ -1,7 +1,7 @@
 package com.ilim.app.business.concretes;
 import com.ilim.app.business.abstracts.UserService;
 import com.ilim.app.dataAccess.UserRepository;
-import com.ilim.app.entities.User;
+import com.ilim.app.entities.UserEntity;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -16,19 +16,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createUser(User user) {
+    public UserEntity createUser(UserEntity user) {
         return userRepository.save(user);
     }
 
     @Override
-    public User getUserById(Long id) {
+    public UserEntity getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + id));
     }
 
     @Override
-    public User updateUser(Long id, User userDetails) {
-        User user = getUserById(id);
+    public UserEntity updateUser(Long id, UserEntity userDetails) {
+        UserEntity user = getUserById(id);
         user.setUsername(userDetails.getUsername());
         user.setEmail(userDetails.getEmail());
         user.setPassword(userDetails.getPassword());
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<UserEntity> getAllUsers() {
         return userRepository.findAll();
     }
 }
