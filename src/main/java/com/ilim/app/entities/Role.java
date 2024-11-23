@@ -6,12 +6,11 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 import java.util.Set;
-
 @Data
 @Entity
-@Table(name = "memberships")
+@Table(name = "roles")
 @NoArgsConstructor
-public class Membership {
+public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,20 +20,18 @@ public class Membership {
     @Column(name = "name", nullable = false, unique = true)
     private RoleName name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",referencedColumnName = "id", nullable = false)
-    private Set<UserEntity> user;
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
+    )
+    private Set<UserEntity> users;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "community_id", referencedColumnName = "id",nullable = false)
-    private Community community;
-
-    private enum RoleName{
+    public enum RoleName {
         ADMIN,
         TEACHER,
         STUDENT
     }
-
 }
-
 

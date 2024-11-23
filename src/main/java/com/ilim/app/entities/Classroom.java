@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
 @Data
 @Entity
 @Table(name = "classrooms")
@@ -19,24 +18,23 @@ public class Classroom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // teacher
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "created_by", referencedColumnName = "id", nullable = false)
+    private UserEntity createdBy;
+
     @Column(nullable = false, unique = true)
     private String name;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "community_id",referencedColumnName = "id", nullable = false)
-    private Community community; // Classroom'un bağlı olduğu Community
 
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Lesson> lessons = new HashSet<>();
 
     @Column(unique = true, nullable = false)
-    private String classCode; // Benzersiz kod
+    private String classCode;
 
     @Column(nullable = false, updatable = false)
-    private java.time.LocalDateTime createdAt = java.time.LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = false)
-    private java.time.LocalDateTime updatedAt = java.time.LocalDateTime.now();
-
-    //helper GetTime
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }

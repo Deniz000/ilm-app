@@ -31,8 +31,8 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson updateLesson(Long id, Lesson lessonDetails) {
         Lesson lesson = getLessonById(id);
-        lesson.setName(lessonDetails.getName());
-        lesson.setDescription(lessonDetails.getDescription());
+        lesson.setTitle(lessonDetails.getTitle());
+        lesson.setContent(lessonDetails.getContent());
         return lessonRepository.save(lesson);
     }
 

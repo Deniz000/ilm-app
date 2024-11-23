@@ -27,11 +27,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity updateUser(Long id, UserEntity userDetails) {
+    public UserEntity updateUser(Long id, UserEntity userEntity) {
         UserEntity user = getUserById(id);
-        user.setUsername(userDetails.getUsername());
-        user.setEmail(userDetails.getEmail());
-        user.setPassword(userDetails.getPassword());
+        user.setUsername(userEntity.getUsername());
+        user.setEmail(userEntity.getEmail());
+        user.setPassword(userEntity.getPassword());
         return userRepository.save(user);
     }
 
