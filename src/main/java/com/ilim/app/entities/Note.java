@@ -16,15 +16,15 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "lesson_id", referencedColumnName = "id", nullable = false)
     private Lesson lesson;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", nullable = false, length = 2000)
     private String content;
 
 }

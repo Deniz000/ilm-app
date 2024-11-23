@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
-
 @Data
 @Entity
 @Table(name = "attendances")
@@ -16,13 +15,21 @@ public class Attendance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AttendanceStatus status; // Enum tipi
 
-    @ManyToOne
-    @JoinColumn(name = "lesson_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lesson_id", referencedColumnName = "id", nullable = false)
     private Lesson lesson;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity user;
+
+    public enum AttendanceStatus {
+        ATTENDED,
+        ABSENT,
+        EXCUSED
+    }
 }

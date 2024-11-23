@@ -6,29 +6,27 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-
 @Data
 @Entity
-@Table(name = "authentication")
+@Table(name = "authentications")
 @NoArgsConstructor
 public class Authentication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    private UserEntity user; // User sınıfı ile ilişki (Many-to-One)
+    private UserEntity user;
 
-    @Column(name = "token", nullable = false, unique = true)
-    private String token; // Token değeri
+    @Column(nullable = false, unique = true)
+    private String token;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt; // Token oluşturulma tarihi
+    private LocalDateTime createdAt;
 
     @Column(name = "expires_at", nullable = false)
-    private LocalDateTime expiresAt; // Token geçerlilik süresi
-
+    private LocalDateTime expiresAt;
 }
+

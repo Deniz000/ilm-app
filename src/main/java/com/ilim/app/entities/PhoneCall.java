@@ -18,13 +18,12 @@ public class PhoneCall {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //TODO : aradaki ilişkiye bakmam gerek !!
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "caller_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private UserEntity caller;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "receiver_id", referencedColumnName = "id", nullable = false)
     @JsonIgnore
     private UserEntity receiver;
