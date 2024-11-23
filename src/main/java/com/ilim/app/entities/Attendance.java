@@ -30,6 +30,10 @@ public class Attendance {
     public enum AttendanceStatus {
         ATTENDED,
         ABSENT,
-        EXCUSED
+        EXCUSED,
+        WILL_ATTEND,
+        NOT_WILL_ATTEND,
+        LATE
     }
+
 }

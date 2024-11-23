@@ -1,5 +1,6 @@
 package com.ilim.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,28 +20,47 @@ public class Lesson {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
+    private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "caller_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private UserEntity caller;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "lessons_participants",
+            joinColumns = @JoinColumn(name = "lesson_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id")
+    )
+    private Set<UserEntity> participants = new HashSet<>();
+
     @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "classroom_id", referencedColumnName = "id", nullable = false)
-    private Classroom classroom;
+    @Column(name = "call_time", nullable = false, updatable=false)
+    private LocalDateTime callTime;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name = "duration")
+    private int duration;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", referencedColumnName = "id", nullable = false)
-    private Category category;
+    @Column(name = "call_link", nullable = false)
+    private String callLink; // Sesli arama linki (örneğin, Zoom/Google Meet)
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Material> materials = new HashSet<>();
 
+    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Note> notes = new HashSet<>(); // Dersle ilgili alınan notlar
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "classroom_id", referencedColumnName = "id", nullable = false)
+    @JsonIgnore
+    private Classroom classroom;
 }
 
