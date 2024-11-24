@@ -23,7 +23,7 @@ public class Classroom {
     @JoinColumn(name = "created_by", referencedColumnName = "id", nullable = false)
     private UserEntity createdBy;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = false)
     private String name;
 
     @OneToMany(mappedBy = "classroom", cascade = CascadeType.ALL, orphanRemoval = true)
