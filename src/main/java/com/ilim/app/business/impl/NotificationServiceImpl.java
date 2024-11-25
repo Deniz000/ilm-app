@@ -1,6 +1,6 @@
-package com.ilim.app.business.concretes;
+package com.ilim.app.business.impl;
 
-import com.ilim.app.business.abstracts.NotificationService;
+import com.ilim.app.business.services.NotificationService;
 import com.ilim.app.dataAccess.NotificationRepository;
 import com.ilim.app.entities.Notification;
 import jakarta.persistence.EntityNotFoundException;

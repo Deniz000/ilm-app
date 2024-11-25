@@ -1,4 +1,4 @@
-package com.ilim.app.business.abstracts;
+package com.ilim.app.business.services;
 
 import com.ilim.app.entities.Role;
 

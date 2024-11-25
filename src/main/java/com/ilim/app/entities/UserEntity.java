@@ -27,12 +27,14 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-
     @ManyToMany(mappedBy = "users", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<Role> roles = new HashSet<>();
 
     // Kullanıcının katıldığı classroom'lar için Many-to-Many ilişki
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ClassroomMembership> memberships = new HashSet<>();
+
+    @ManyToMany(mappedBy = "participants", fetch = FetchType.LAZY)
+    private Set<Lesson> lessons = new HashSet<>();
 }
 

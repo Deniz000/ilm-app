@@ -1,6 +1,6 @@
 package com.ilim.app.api;
 
-import com.ilim.app.business.abstracts.UserService;
+import com.ilim.app.business.services.UserService;
 import com.ilim.app.entities.UserEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

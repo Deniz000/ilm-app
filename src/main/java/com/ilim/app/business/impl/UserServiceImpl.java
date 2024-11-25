@@ -1,5 +1,5 @@
-package com.ilim.app.business.concretes;
-import com.ilim.app.business.abstracts.UserService;
+package com.ilim.app.business.impl;
+import com.ilim.app.business.services.UserService;
 import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.entities.UserEntity;
 import jakarta.persistence.EntityNotFoundException;

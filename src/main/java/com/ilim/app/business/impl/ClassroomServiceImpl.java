@@ -1,6 +1,6 @@
-package com.ilim.app.business.concretes;
+package com.ilim.app.business.impl;
 
-import com.ilim.app.business.abstracts.ClassroomService;
+import com.ilim.app.business.services.ClassroomService;
 import com.ilim.app.dataAccess.ClassroomMembershipRepository;
 import com.ilim.app.dataAccess.ClassroomRepository;
 import com.ilim.app.dataAccess.UserRepository;
