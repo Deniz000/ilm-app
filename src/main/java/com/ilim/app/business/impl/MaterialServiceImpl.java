@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 public class MaterialServiceImpl implements MaterialService {
 
     private final MaterialRepository materialRepository;
-    private final MaterialEntityHelper materialEntityHelper;
+    private final MaterialValidationHelper validationHelper;
 
     @Override
     public MaterialResponse addMaterial(MaterialRequest request) {
-        if(materialEntityHelper.checkIfMaterialExists(request.getTitle())) {
+        if(validationHelper.checkIfMaterialExists(request.getTitle())) {
             throw new EntityAlreadyExits("Material already exists" + request.getTitle());
         }
         Material material = mapToEntity(request);
@@ -39,10 +39,10 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     public MaterialResponse updateMaterial(Long id, MaterialRequest response) {
-        Material material = materialEntityHelper.getIfMaterialExists(id);
+        Material material = validationHelper.getIfMaterialExists(id);
         material.setTitle(response.getTitle());
         material.setFileUrl(response.getFileUrl());
-        material.setLesson(materialEntityHelper.getIfLessonExist(response.getLessonId()));
+        material.setLesson(validationHelper.getIfLessonExist(response.getLessonId()));
         return mapToResponse(materialRepository.save(material));
     }
 
@@ -70,7 +70,7 @@ public class MaterialServiceImpl implements MaterialService {
         Material material = new Material();
         material.setTitle(materialRequest.getTitle());
         material.setFileUrl(materialRequest.getFileUrl());
-        material.setLesson(materialEntityHelper.getIfLessonExist(materialRequest.getLessonId()));
+        material.setLesson(validationHelper.getIfLessonExist(materialRequest.getLessonId()));
         return material;
     }
 }

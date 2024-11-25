@@ -8,7 +8,7 @@ import lombok.Data;
 import org.springframework.stereotype.Service;
 
 @Service
-public record CategoryEntityHelper(CategoryRepository categoryRepository) {
+public record CategoryValidationHelper(CategoryRepository categoryRepository) {
     public Category getIfCategoryExists(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));

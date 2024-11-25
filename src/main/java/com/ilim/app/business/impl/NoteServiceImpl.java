@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class NoteServiceImpl implements NoteService {
 
     private final NoteRepository noteRepository;
-    private final NoteEntityHelper noteEntityHelper;
+    private final NoteValidationHelper validationHelper;
 
     @Override
     public NoteResponse createNote(NoteRequest request) {
@@ -32,12 +32,12 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public NoteResponse getNoteById(Long id) {
-        return mapToResponse(noteEntityHelper.fetchNote(id));
+        return mapToResponse(validationHelper.fetchNote(id));
     }
 
     @Override
     public NoteResponse updateNote(Long id, NoteRequest request) {
-        Note note = noteEntityHelper.fetchNote(id);
+        Note note = validationHelper.fetchNote(id);
         note.setUpdatedAt(LocalDateTime.now());
         note.setContent(request.getContent());
         return mapToResponse(noteRepository.save(note));
@@ -45,7 +45,7 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     public void deleteNote(Long id) {
-        noteEntityHelper.checkIfNoteIdExists(id);
+        validationHelper.checkIfNoteIdExists(id);
         noteRepository.deleteById(id);
     }
 

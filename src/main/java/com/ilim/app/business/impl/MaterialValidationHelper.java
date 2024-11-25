@@ -9,7 +9,7 @@ import com.ilim.app.entities.Material;
 import org.springframework.stereotype.Service;
 
 @Service
-public record MaterialEntityHelper(MaterialRepository materialRepository,
+public record MaterialValidationHelper(MaterialRepository materialRepository,
                                    LessonRepository lessonRepository) {
     public boolean checkIfMaterialExists(String materialName) {
         return materialRepository.existsMaterialByTitle(materialName);

@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryEntityHelper categoryEntityHelper;
+    private final CategoryValidationHelper validationHelper;
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
-        if(categoryEntityHelper.checkIfCategoryExitsByName(request.getName())){
+        if(validationHelper.checkIfCategoryExitsByName(request.getName())){
             throw new EntityAlreadyExits("Category with name " + request.getName() + " already exists");
         }
         Category category = mapToEntity(request);
@@ -37,13 +37,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponse getCategoryById(Long id) {
-        Category category = categoryEntityHelper.getIfCategoryExists(id);
+        Category category = validationHelper.getIfCategoryExists(id);
         return mapToResponse(category);
     }
 
     @Override
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
-        Category category = categoryEntityHelper.getIfCategoryExists(id);
+        Category category = validationHelper.getIfCategoryExists(id);
         category.setName(request.getName());
         category.setDescription(request.getDescription());
         return mapToResponse(categoryRepository.save(category));
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void deleteCategory(Long id) {
-        if(!categoryEntityHelper.checkIfCategoryExitsById(id)){
+        if(!validationHelper.checkIfCategoryExitsById(id)){
             throw new CategoryNotFoundException("Category does not exist" + id);
         }
         categoryRepository.deleteById(id);

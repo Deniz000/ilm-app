@@ -6,7 +6,7 @@ import com.ilim.app.entities.Note;
 import org.springframework.stereotype.Service;
 
 @Service
-public record NoteEntityHelper
+public record NoteValidationHelper
         (NoteRepository noteRepository) {
     public Note fetchNote(Long noteId) {
         return noteRepository.findById(noteId)

@@ -20,10 +20,10 @@ import java.util.stream.Collectors;
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
-    private final LessonEntityHelper lessonEntityHelper;
+    private final LessonValidationHelper validationHelper;
 
     public LessonResponse createLesson(LessonRequest lessonRequest) {
-        if (lessonEntityHelper.exitsLessonByTitle(lessonRequest.getTitle())) {
+        if (validationHelper.exitsLessonByTitle(lessonRequest.getTitle())) {
             throw new EntityAlreadyExits("Lesson already exists" + lessonRequest.getTitle());
         }
         Lesson lesson = mapToEntity(lessonRequest);
@@ -32,18 +32,18 @@ public class LessonServiceImpl implements LessonService {
     }
 
     public LessonResponse getLessonById(Long id) {
-        Lesson lesson = lessonEntityHelper.getIfLessonExists(id);
+        Lesson lesson = validationHelper.getIfLessonExists(id);
         return mapToResponse(lesson);
     }
 
     public LessonResponse updateLesson(Long id, LessonUpdateRequest lessonRequest) {
-        Lesson lesson = lessonEntityHelper.getIfLessonExists(id);
-        lesson.setCategory(lessonEntityHelper.getIfCategoryExists(lessonRequest.getCategoryId()));
+        Lesson lesson = validationHelper.getIfLessonExists(id);
+        lesson.setCategory(validationHelper.getIfCategoryExists(lessonRequest.getCategoryId()));
         lesson.setContent(lessonRequest.getContent());
         lesson.setTitle(lessonRequest.getTitle());
         lesson.setCallTime(lessonRequest.getCallTime());
         lesson.setCallLink(lessonRequest.getCallLink());
-        lesson.setClassroom(lessonEntityHelper.getIfClassroomExists(lessonRequest.getClassroomId()));
+        lesson.setClassroom(validationHelper.getIfClassroomExists(lessonRequest.getClassroomId()));
         //app 'den default alınacak
         return mapToResponse(lessonRepository.save(lesson));
     }
@@ -62,12 +62,12 @@ public class LessonServiceImpl implements LessonService {
     }
 
     public List<LessonResponse> getLessonsForUser(Long userId) {
-        UserEntity user = lessonEntityHelper.getUserIfExists(userId);
+        UserEntity user = validationHelper.getUserIfExists(userId);
         return lessonRepository.findLessonsByUserId(user.getId()).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     public List<LessonResponse> getLessonsForClassroom(Long classroomId) {
-        Classroom classroom = lessonEntityHelper.getIfClassroomExists(classroomId);
+        Classroom classroom = validationHelper.getIfClassroomExists(classroomId);
         return lessonRepository.findLessonByClassroom_Id(classroom.getId()).stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -85,18 +85,18 @@ public class LessonServiceImpl implements LessonService {
 //        return lessonRepository.save(lesson);
 //    }
     private LessonResponse mapToResponse(Lesson lesson) {
-        return new LessonResponse(lessonEntityHelper.getIfCategoryExists(lesson.getCategory().getId()).getName(), lessonEntityHelper.getUserIfExists(lesson.getCaller().getId()).getUsername(), lesson.getTitle(), lesson.getContent(), lesson.getCallTime(), lesson.getDuration(), lesson.getCallLink(), lesson.getClassroom().getName());
+        return new LessonResponse(validationHelper.getIfCategoryExists(lesson.getCategory().getId()).getName(), validationHelper.getUserIfExists(lesson.getCaller().getId()).getUsername(), lesson.getTitle(), lesson.getContent(), lesson.getCallTime(), lesson.getDuration(), lesson.getCallLink(), lesson.getClassroom().getName());
     }
 
     private Lesson mapToEntity(LessonRequest request) {
         Lesson lesson = new Lesson();
-        lesson.setCategory(lessonEntityHelper.getIfCategoryExists(request.getCategoryId()));
-        lesson.setCaller(lessonEntityHelper.getUserIfExists(request.getCallerId()));
+        lesson.setCategory(validationHelper.getIfCategoryExists(request.getCategoryId()));
+        lesson.setCaller(validationHelper.getUserIfExists(request.getCallerId()));
         lesson.setTitle(request.getTitle());
         lesson.setContent(request.getContent());
         lesson.setDuration(request.getDuration());
         lesson.setCallLink(request.getCallLink());
-        lesson.setClassroom(lessonEntityHelper.getIfClassroomExists(request.getClassroomId()));
+        lesson.setClassroom(validationHelper.getIfClassroomExists(request.getClassroomId()));
         return lesson;
     }
 

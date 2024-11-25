@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-public  record  LessonEntityHelper(UserRepository userRepository, ClassroomRepository classroomRepository,
+public  record  LessonValidationHelper(UserRepository userRepository, ClassroomRepository classroomRepository,
 LessonRepository lessonRepository, CategoryRepository categoryRepository) {
 
     public UserEntity getUserIfExists(Long userId) {
@@ -32,9 +32,6 @@ LessonRepository lessonRepository, CategoryRepository categoryRepository) {
     public Lesson getIfLessonExists(Long lessonId) {
         return lessonRepository.findById(lessonId)
                 .orElseThrow(()-> new LessonNotFoundException("Caller not found"));
-    }
-    public boolean exitsLessonById(Long lessonId) {
-        return lessonRepository.existsById(lessonId);
     }
     public boolean exitsLessonByTitle(String title) {
         return lessonRepository.existsByTitle(title);
