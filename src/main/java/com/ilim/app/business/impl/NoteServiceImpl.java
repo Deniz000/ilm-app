@@ -1,18 +1,22 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.NoteService;
+import com.ilim.app.business.validationhelper.NoteValidationHelper;
+import com.ilim.app.core.Formatter;
+import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.NoteRepository;
 import com.ilim.app.dto.note.NoteRequest;
 import com.ilim.app.dto.note.NoteResponse;
 import com.ilim.app.entities.Note;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -20,62 +24,60 @@ public class NoteServiceImpl implements NoteService {
 
     private final NoteRepository noteRepository;
     private final NoteValidationHelper validationHelper;
+    private final ModelMapperService modelMapperService;
+
+    private final String getDate = new Formatter().getDate();
 
     @Override
     public NoteResponse createNote(NoteRequest request) {
-        Note note = mapToEntity(request);
-        LocalDateTime now = LocalDateTime.now();
-        note.setCreatedAt(now);
-        note.setUpdatedAt(now);
-        return mapToResponse(noteRepository.save(note));
+        log.info("Creating note ");
+        //saving same note is not a problem
+        Note note = modelMapperService.forRequest().map(request, Note.class);
+        note.setCreatedAt(getDate);
+        note.setUpdatedAt(getDate);
+        noteRepository.save(note);
+        log.info("Created note");
+        return modelMapperService.forResponse().map(note, NoteResponse.class);
     }
 
     @Override
     public NoteResponse getNoteById(Long id) {
-        return mapToResponse(validationHelper.fetchNote(id));
+        log.info("Fetching notes: {}", id);
+        Note note = validationHelper.getNoteIfExist(id);
+        return modelMapperService.forResponse().map(note, NoteResponse.class);
     }
 
     @Override
     public NoteResponse updateNote(Long id, NoteRequest request) {
-        Note note = validationHelper.fetchNote(id);
-        note.setUpdatedAt(LocalDateTime.now());
+        log.info("Updating note with ID: {}", id);
+        Note note = validationHelper.getNoteIfExist(id);
         note.setContent(request.getContent());
-        return mapToResponse(noteRepository.save(note));
+        note.setUpdatedAt(getDate);
+        log.info("Note updated with ID: {}", id);
+        return modelMapperService.forResponse().map(noteRepository.save(note), NoteResponse.class);
     }
 
     @Override
-    public void deleteNote(Long id) {
-        validationHelper.checkIfNoteIdExists(id);
-        noteRepository.deleteById(id);
-    }
-
-    @Override
-    public List<NoteResponse> getAllNotes(Long userId) {
-        return noteRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
+    public List<NoteResponse> getNotesByUser(Long userId) {
+        log.info("Fetching notes for user ID: {}", userId);
+        return noteRepository.findNoteByUserId(userId).stream()
+                .map(note -> modelMapperService.forResponse().map(note, NoteResponse.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public List<NoteResponse> getNotesByLesson(Long lessonId) {
-        return noteRepository.findNoteByLessonId(lessonId)
-                .stream()
-                .map(this::mapToResponse)
+        log.info("Fetching notes for lesson ID: {}", lessonId);
+        return noteRepository.findNoteByLessonId(lessonId).stream()
+                .map(note -> modelMapperService.forResponse().map(note, NoteResponse.class))
                 .collect(Collectors.toList());
     }
 
-    private NoteResponse mapToResponse(Note note) {
-        return new NoteResponse(
-                note.getUser().getId(),
-                note.getLesson().getId(),
-                note.getContent(),
-                note.getCreatedAt(),
-                note.getUpdatedAt()
-        );
-
-    }
-
-    private Note mapToEntity(NoteRequest request) {
-        Note note = new Note();
-        note.setContent(request.getContent());
-        return note;
+    @Override
+    public void deleteNote(Long id) {
+        log.info("Deleting note with ID: {}", id);
+        Note note = validationHelper.getNoteIfExist(id);
+        noteRepository.deleteById(note.getId());
+        log.info("Note ID: {} deleted.", id);
     }
 }

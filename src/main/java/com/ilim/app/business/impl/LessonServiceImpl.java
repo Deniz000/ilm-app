@@ -1,7 +1,9 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.LessonService;
+import com.ilim.app.business.validationhelper.LessonValidationHelper;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
+import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.LessonRepository;
 import com.ilim.app.dto.lesson.LessonRequest;
 import com.ilim.app.dto.lesson.LessonResponse;
@@ -9,11 +11,13 @@ import com.ilim.app.dto.lesson.LessonUpdateRequest;
 import com.ilim.app.entities.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,61 +25,77 @@ public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
     private final LessonValidationHelper validationHelper;
+    private ModelMapperService modelMapperService;
 
     public LessonResponse createLesson(LessonRequest lessonRequest) {
-        if (validationHelper.exitsLessonByTitle(lessonRequest.getTitle())) {
+        log.info("Create lesson: {}", lessonRequest.getTitle());
+        if (validationHelper.validateLessonByTitle(lessonRequest.getTitle())) {
             throw new EntityAlreadyExits("Lesson already exists" + lessonRequest.getTitle());
         }
-        Lesson lesson = mapToEntity(lessonRequest);
-        return mapToResponse(lessonRepository.save(lesson));
+        Lesson lesson = modelMapperService.forRequest().map(lessonRequest, Lesson.class);
+        lessonRepository.save(lesson);
+        log.info("Lesson created: {}", lesson);
+        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
 
     }
 
     public LessonResponse getLessonById(Long id) {
-        Lesson lesson = validationHelper.getIfLessonExists(id);
-        return mapToResponse(lesson);
+        log.info("Getting Lesson by id: {}", id);
+        Lesson lesson = validationHelper.getLessonIfExists(id);
+        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
     }
 
     public LessonResponse updateLesson(Long id, LessonUpdateRequest lessonRequest) {
-        Lesson lesson = validationHelper.getIfLessonExists(id);
-        lesson.setCategory(validationHelper.getIfCategoryExists(lessonRequest.getCategoryId()));
-        lesson.setContent(lessonRequest.getContent());
-        lesson.setTitle(lessonRequest.getTitle());
-        lesson.setCallTime(lessonRequest.getCallTime());
-        lesson.setCallLink(lessonRequest.getCallLink());
-        lesson.setClassroom(validationHelper.getIfClassroomExists(lessonRequest.getClassroomId()));
-        //app 'den default alınacak
-        return mapToResponse(lessonRepository.save(lesson));
+        log.info("Updating calendar event with ID: {}", id);
+        Lesson lesson = validationHelper.getLessonIfExists(id);
+        modelMapperService.forRequest().map(lessonRequest, lesson);
+        lesson.setCategory(validationHelper.getCategoryIfExists(id));
+        lesson.setClassroom(validationHelper.getClassroomIfExists(id));
+        lessonRepository.save(lesson);
+        log.info("Calendar event updated with ID: {}", id);
+        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
     }
 
-    @Override
-    public void deleteLesson(Long id) {
-        if (!lessonRepository.existsById(id)) {
-            throw new EntityAlreadyExits("Lesson does not exists" + id);
-        }
-        lessonRepository.deleteById(id);
-    }
 
     @Override
     public List<LessonResponse> getAllLessons() {
-        return lessonRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
+        log.info("Getting all lessons");
+        return lessonRepository.findAll().stream()
+                .map(lesson -> modelMapperService.forResponse()
+                        .map(lesson,LessonResponse.class))
+                .collect(Collectors.toList());
     }
 
     public List<LessonResponse> getLessonsForUser(Long userId) {
+        log.info("Getting all lessons for user: {}", userId);
         UserEntity user = validationHelper.getUserIfExists(userId);
-        return lessonRepository.findLessonsByUserId(user.getId()).stream().map(this::mapToResponse).collect(Collectors.toList());
+        return lessonRepository.findLessonsByUserId(user.getId()).stream()
+                .map(lesson -> modelMapperService.forResponse()
+                        .map(lesson,LessonResponse.class))
+                .collect(Collectors.toList());
     }
 
     public List<LessonResponse> getLessonsForClassroom(Long classroomId) {
-        Classroom classroom = validationHelper.getIfClassroomExists(classroomId);
-        return lessonRepository.findLessonByClassroom_Id(classroom.getId()).stream().map(this::mapToResponse).collect(Collectors.toList());
+        log.info("Getting all lessons for classroom: {}", classroomId);
+        Classroom classroom = validationHelper.getClassroomIfExists(classroomId);
+        return lessonRepository.findLessonByClassroom_Id(classroom.getId()).stream()
+                .map(lesson -> modelMapperService.forResponse().map(lesson,LessonResponse.class))
+                .collect(Collectors.toList());
     }
 
+
+    @Override
+    public void deleteLesson(Long id) {
+        log.info("Deleting calendar event with ID: {}", id);
+        Lesson lesson = validationHelper.getLessonIfExists(id);
+        lessonRepository.deleteById(lesson.getId());
+        log.info("Notification with ID: {} deleted.", id);
+
+    }
 //    public Lesson assignAdditionalTeacher(Long lessonId, Long teacherId) {
 //        Lesson lesson = fetchLesson(lessonId);
 //        UserEntity teacher = fetchUser(teacherId);
 //
-
     /// /        if (teacher.getRoles().stream().noneMatch(role -> role.getName().equals(Role.RoleName.TEACHER))) {
     /// /            throw new UserNotTeacherException("User is not a teacher");
     /// /        }
@@ -84,21 +104,7 @@ public class LessonServiceImpl implements LessonService {
 //        lesson.getParticipants().add(teacher);
 //        return lessonRepository.save(lesson);
 //    }
-    private LessonResponse mapToResponse(Lesson lesson) {
-        return new LessonResponse(validationHelper.getIfCategoryExists(lesson.getCategory().getId()).getName(), validationHelper.getUserIfExists(lesson.getCaller().getId()).getUsername(), lesson.getTitle(), lesson.getContent(), lesson.getCallTime(), lesson.getDuration(), lesson.getCallLink(), lesson.getClassroom().getName());
-    }
 
-    private Lesson mapToEntity(LessonRequest request) {
-        Lesson lesson = new Lesson();
-        lesson.setCategory(validationHelper.getIfCategoryExists(request.getCategoryId()));
-        lesson.setCaller(validationHelper.getUserIfExists(request.getCallerId()));
-        lesson.setTitle(request.getTitle());
-        lesson.setContent(request.getContent());
-        lesson.setDuration(request.getDuration());
-        lesson.setCallLink(request.getCallLink());
-        lesson.setClassroom(validationHelper.getIfClassroomExists(request.getClassroomId()));
-        return lesson;
-    }
 
 
 }

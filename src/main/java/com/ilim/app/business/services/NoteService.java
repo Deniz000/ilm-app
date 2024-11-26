@@ -11,5 +11,5 @@ public interface NoteService {
     NoteResponse updateNote(Long id, NoteRequest request);
     void deleteNote(Long id);
     List<NoteResponse> getNotesByLesson(Long lessonId);
-    List<NoteResponse> getAllNotes(Long userId);
+    List<NoteResponse> getNotesByUser(Long userId);
     }

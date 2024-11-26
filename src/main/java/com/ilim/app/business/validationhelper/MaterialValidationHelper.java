@@ -1,4 +1,4 @@
-package com.ilim.app.business.impl;
+package com.ilim.app.business.validationhelper;
 
 import com.ilim.app.core.exceptions.LessonNotFoundException;
 import com.ilim.app.core.exceptions.MaterialNotFoundException;
@@ -10,15 +10,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public record MaterialValidationHelper(MaterialRepository materialRepository,
-                                   LessonRepository lessonRepository) {
-    public boolean checkIfMaterialExists(String materialName) {
+                                       LessonRepository lessonRepository) {
+
+    public boolean validateMaterialExists(String materialName) {
         return materialRepository.existsMaterialByTitle(materialName);
     }
-    public Lesson getIfLessonExist(Long id){
+
+    public Lesson getLessonIfExist(Long id) {
         return lessonRepository.findById(id)
                 .orElseThrow(() -> new LessonNotFoundException("Lesson not found" + id));
     }
-    public Material getIfMaterialExists(Long id){
+
+    public Material getMaterialIfExists(Long id) {
         return materialRepository.findById(id)
                 .orElseThrow(() -> new MaterialNotFoundException("Material not found" + id));
-}}
+    }
+}

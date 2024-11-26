@@ -1,49 +1,81 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.NotificationService;
+import com.ilim.app.business.validationhelper.NotificationValidationHelper;
+import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.NotificationRepository;
+import com.ilim.app.dto.notification.CreateNotificationRequest;
+import com.ilim.app.dto.notification.NotificationResponse;
 import com.ilim.app.entities.Notification;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final NotificationValidationHelper validate;
+    private final ModelMapperService modelMapperService;
 
-    public NotificationServiceImpl(NotificationRepository notificationRepository) {
-        this.notificationRepository = notificationRepository;
+    @Override
+    @Transactional
+    public NotificationResponse createNotification(CreateNotificationRequest request) {
+        log.info("Creating notification for user ID: {}", request.getUserId());
+
+        validate.validateNotificationRequest(request);
+
+        Notification notification = modelMapperService.forRequest().map(request, Notification.class);
+        notification.setUser(validate.getUserIfExists(request.getUserId()));
+
+        notificationRepository.save(notification);
+        log.info("Notification created with ID: {}", notification.getId());
+        return modelMapperService.forResponse().map(notification, NotificationResponse.class);
     }
 
     @Override
-    public Notification createNotification(Notification notification) {
-        notification.setCreatedAt(LocalDateTime.now());
-        return notificationRepository.save(notification);
+    @Transactional()
+    public NotificationResponse getNotificationById(Long id) {
+        Notification notification = validate.getNotificationIfExists(id);
+        return modelMapperService.forResponse().map(notification, NotificationResponse.class);
     }
 
     @Override
-    public Notification getNotificationById(Long id) {
-        return notificationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Notification not found with ID: " + id));
+    @Transactional()
+    public List<NotificationResponse> getNotificationsByUser(Long userId) {
+        log.info("Fetching notifications for user ID: {}", userId);
+        validate.validateUserExists(userId);
+        List<Notification> notifications = notificationRepository.findByUserId(userId);
+
+        return notifications.stream().
+                map(x -> modelMapperService.forResponse()
+                        .map(x, NotificationResponse.class))
+                .collect(Collectors.toList());
+
     }
 
     @Override
-    public List<Notification> getNotificationsByUser(Long userId) {
-        return notificationRepository.findByUserId(userId);
-    }
-
-    @Override
+    @Transactional
     public Notification markAsRead(Long id) {
-        Notification notification = getNotificationById(id);
+        Notification notification = validate.getNotificationIfExists(id);
         notification.setStatus(Notification.NotificationStatus.READ);
-        return notificationRepository.save(notification);
+        notificationRepository.save(notification);
+        log.info("Notification with ID: {} marked as read.", id);
+        return notification;
     }
 
     @Override
+    @Transactional
     public void deleteNotification(Long id) {
-        notificationRepository.deleteById(id);
+        log.info("Deleting notification with ID: {}", id);
+        Notification notification = validate.getNotificationIfExists(id);
+        notificationRepository.delete(notification);
+        log.info("Notification with ID: {} deleted.", id);
     }
 }

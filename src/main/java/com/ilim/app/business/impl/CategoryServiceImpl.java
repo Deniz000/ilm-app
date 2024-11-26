@@ -1,5 +1,7 @@
 package com.ilim.app.business.impl;
 
+import com.ilim.app.business.validationhelper.CategoryValidationHelper;
+import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dto.category.CategoryRequest;
 import com.ilim.app.business.services.CategoryService;
 import com.ilim.app.core.exceptions.CategoryNotFoundException;
@@ -9,11 +11,13 @@ import com.ilim.app.dto.category.CategoryResponse;
 import com.ilim.app.entities.Category;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,54 +25,52 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryValidationHelper validationHelper;
+    private final ModelMapperService modelMapperService;
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
-        if(validationHelper.checkIfCategoryExitsByName(request.getName())){
+        log.info("Creating category: {}", request.getName());
+        if(validationHelper.validateCategoryExitsByName(request.getName())){
             throw new EntityAlreadyExits("Category with name " + request.getName() + " already exists");
         }
-        Category category = mapToEntity(request);
-        return mapToResponse(categoryRepository.save(category));
+        Category category = modelMapperService.forRequest().map(request, Category.class);
+        categoryRepository.save(category);
+        log.info("Category created: {}", category.getName());
+        return modelMapperService.forResponse().map(category, CategoryResponse.class);
     }
 
     @Override
     public CategoryResponse getCategoryById(Long id) {
-        Category category = validationHelper.getIfCategoryExists(id);
-        return mapToResponse(category);
+        log.info("Fetching category by id {}", id);
+        Category category = validationHelper.getCategoryIfExists(id);
+        return modelMapperService.forResponse().map(category, CategoryResponse.class);
     }
 
     @Override
     public CategoryResponse updateCategory(Long id, CategoryRequest request) {
-        Category category = validationHelper.getIfCategoryExists(id);
-        category.setName(request.getName());
-        category.setDescription(request.getDescription());
-        return mapToResponse(categoryRepository.save(category));
-    }
-
-    @Override
-    public void deleteCategory(Long id) {
-        if(!validationHelper.checkIfCategoryExitsById(id)){
-            throw new CategoryNotFoundException("Category does not exist" + id);
-        }
-        categoryRepository.deleteById(id);
+        log.info("Updating calendar event with ID: {}", id);
+        Category category = validationHelper.getCategoryIfExists(id);
+        modelMapperService.forRequest().map(request, category);
+        log.info("Calendar event updated with ID: {}", id);
+        return modelMapperService.forResponse().map(category, CategoryResponse.class);
     }
 
     @Override
     public List<CategoryResponse> getAllCategories() {
+        log.info("Fetching all categories");
         return categoryRepository.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(category -> modelMapperService.forResponse().map(category, CategoryResponse.class))
                 .collect(Collectors.toList());
     }
 
-    private CategoryResponse mapToResponse(Category category) {
-        return new CategoryResponse(category.getName(), category.getDescription());
-    }
 
-    private Category mapToEntity(CategoryRequest categoryRequest) {
-        Category category = new Category();
-        category.setName(categoryRequest.getName());
-        category.setDescription(categoryRequest.getDescription());
-        return category;
+    @Override
+    public void deleteCategory(Long id) {
+        log.info("Deleting calendar event with ID: {}", id);
+        Category category = validationHelper.getCategoryIfExists(id);
+        categoryRepository.deleteById(category.getId());
+        log.info("Notification with ID: {} deleted.", id);
+
     }
 }

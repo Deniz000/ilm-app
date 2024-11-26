@@ -1,4 +1,4 @@
-package com.ilim.app.business.impl;
+package com.ilim.app.business.validationhelper;
 
 import com.ilim.app.core.exceptions.NoteNotFoundException;
 import com.ilim.app.dataAccess.NoteRepository;
@@ -8,15 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public record NoteValidationHelper
         (NoteRepository noteRepository) {
-    public Note fetchNote(Long noteId) {
+
+    public Note getNoteIfExist(Long noteId) {
         return noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteNotFoundException("Note not found with ID: " + noteId));
-    }
-
-    public void checkIfNoteIdExists(Long noteId) {
-        if (!noteRepository.existsById(noteId)) {
-            throw new NoteNotFoundException("Note not found with ID: " + noteId);
-        }
     }
 
 }

@@ -1,4 +1,4 @@
-package com.ilim.app.business.impl;
+package com.ilim.app.business.validationhelper;
 
 import com.ilim.app.core.exceptions.CategoryNotFoundException;
 import com.ilim.app.dataAccess.CategoryRepository;
@@ -7,14 +7,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 public record CategoryValidationHelper(CategoryRepository categoryRepository) {
-    public Category getIfCategoryExists(Long id) {
+    public Category getCategoryIfExists(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found with ID: " + id));
     }
-    public boolean checkIfCategoryExitsByName(String name) {
+
+    public Category getCategoryByNameIfExists(String name) {
+        return categoryRepository.findByName(name)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found with name: " + name));
+    }
+
+
+    public boolean validateCategoryExitsByName(String name) {
         return categoryRepository.existsByName(name);
     }
-public boolean checkIfCategoryExitsById(Long id) {
-    return categoryRepository.existsById(id);
-}
+
+    public boolean validateCategoryExitsById(Long id) {
+        return categoryRepository.existsById(id);
+    }
 }

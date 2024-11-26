@@ -1,15 +1,15 @@
 package com.ilim.app.business.services;
 
-import com.ilim.app.entities.CalendarEvent;
+import com.ilim.app.dto.calendar.CalendarEventResponse;
+import com.ilim.app.dto.calendar.CreateCalendarEventRequest;
+import com.ilim.app.dto.calendar.UpdateCalendarEventRequest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CalendarEventService {
-    List<CalendarEvent> getEventsByUser(Long userId);
-    List<CalendarEvent> getEventsByLesson(Long lessonId);
-    //TODO: dto ile düzeltilecek
-    CalendarEvent createCalendarEvent(Long creatorId, String title, String description,
-                                             LocalDateTime startTime, LocalDateTime endTime,
-                                             CalendarEvent.EventType eventType, Long lessonId);
+    List<CalendarEventResponse> getEventsByUser(Long userId);
+    List<CalendarEventResponse> getEventsByLesson(Long lessonId);
+    CalendarEventResponse createCalendarEvent(CreateCalendarEventRequest request);
+    CalendarEventResponse updateCalendarEvent(Long id, UpdateCalendarEventRequest request);
+    void deleteCalendarEvent(Long id);
     }
