@@ -1,20 +1,16 @@
 package com.ilim.app.business.impl;
 
-import com.ilim.app.business.dto.category.CategoryRequest;
+import com.ilim.app.dto.category.CategoryRequest;
 import com.ilim.app.business.services.CategoryService;
 import com.ilim.app.core.exceptions.CategoryNotFoundException;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.dataAccess.CategoryRepository;
-import com.ilim.app.business.dto.category.CategoryResponse;
+import com.ilim.app.dto.category.CategoryResponse;
 import com.ilim.app.entities.Category;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.rmi.AlreadyBoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 

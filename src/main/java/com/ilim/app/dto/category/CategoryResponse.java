@@ -1,4 +1,4 @@
-package com.ilim.app.business.dto.category;
+package com.ilim.app.dto.category;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

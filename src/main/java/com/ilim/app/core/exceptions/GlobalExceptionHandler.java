@@ -137,7 +137,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(CategoryNotFoundException.class)
+    @ExceptionHandler(EntityAlreadyExits.class)
     @ResponseStatus(HttpStatus.IM_USED)
     public ResponseEntity<ErrorResponse> handleEntityAlreadyExistException(EntityAlreadyExits ex) {
         logger.info("EntityAlreadyExistException: {}", ex.getMessage());
@@ -149,6 +149,14 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleMaterialNotExistException(MaterialNotFoundException ex) {
         logger.info("MaterialNotFoundException: {}", ex.getMessage());
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ClassroomUsersNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorResponse> handleClassroomUsersNotFoundException(ClassroomUsersNotFoundException ex) {
+        logger.info("ClassroomUsersNotFoundException: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }

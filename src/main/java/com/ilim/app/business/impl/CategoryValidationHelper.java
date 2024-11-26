@@ -3,8 +3,6 @@ package com.ilim.app.business.impl;
 import com.ilim.app.core.exceptions.CategoryNotFoundException;
 import com.ilim.app.dataAccess.CategoryRepository;
 import com.ilim.app.entities.Category;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.stereotype.Service;
 
 @Service

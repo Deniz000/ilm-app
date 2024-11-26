@@ -1,8 +1,7 @@
 package com.ilim.app.business.services;
 
-import com.ilim.app.business.dto.category.CategoryRequest;
-import com.ilim.app.business.dto.category.CategoryResponse;
-import com.ilim.app.entities.Category;
+import com.ilim.app.dto.category.CategoryRequest;
+import com.ilim.app.dto.category.CategoryResponse;
 
 import java.util.List;
 
