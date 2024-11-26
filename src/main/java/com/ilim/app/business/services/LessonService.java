@@ -1,8 +1,8 @@
 package com.ilim.app.business.services;
 
-import com.ilim.app.business.dto.lesson.LessonRequest;
-import com.ilim.app.business.dto.lesson.LessonResponse;
-import com.ilim.app.business.dto.lesson.LessonUpdateRequest;
+import com.ilim.app.dto.lesson.LessonRequest;
+import com.ilim.app.dto.lesson.LessonResponse;
+import com.ilim.app.dto.lesson.LessonUpdateRequest;
 
 import java.util.List;
 

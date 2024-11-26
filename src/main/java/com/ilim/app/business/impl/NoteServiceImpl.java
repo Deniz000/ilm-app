@@ -2,8 +2,8 @@ package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.NoteService;
 import com.ilim.app.dataAccess.NoteRepository;
-import com.ilim.app.business.dto.note.NoteRequest;
-import com.ilim.app.business.dto.note.NoteResponse;
+import com.ilim.app.dto.note.NoteRequest;
+import com.ilim.app.dto.note.NoteResponse;
 import com.ilim.app.entities.Note;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

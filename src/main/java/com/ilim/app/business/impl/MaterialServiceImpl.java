@@ -1,13 +1,12 @@
 package com.ilim.app.business.impl;
 
-import com.ilim.app.business.dto.material.MaterialRequest;
-import com.ilim.app.business.dto.material.MaterialResponse;
+import com.ilim.app.dto.material.MaterialRequest;
+import com.ilim.app.dto.material.MaterialResponse;
 import com.ilim.app.business.services.MaterialService;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.exceptions.MaterialNotFoundException;
 import com.ilim.app.dataAccess.MaterialRepository;
 import com.ilim.app.entities.Material;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

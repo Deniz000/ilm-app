@@ -1,4 +1,4 @@
-package com.ilim.app.business.dto.note;
+package com.ilim.app.dto.note;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

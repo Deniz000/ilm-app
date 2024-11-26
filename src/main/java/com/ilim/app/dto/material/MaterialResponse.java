@@ -1,4 +1,4 @@
-package com.ilim.app.business.dto.material;
+package com.ilim.app.dto.material;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

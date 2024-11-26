@@ -1,11 +1,11 @@
 package com.ilim.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -32,7 +32,8 @@ public class UserEntity {
 
     // Kullanıcının katıldığı classroom'lar için Many-to-Many ilişki
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ClassroomMembership> memberships = new HashSet<>();
+    @JsonIgnore
+    private Set<ClassroomUser> relationOfClassrom = new HashSet<>();
 
     @ManyToMany(mappedBy = "participants", fetch = FetchType.LAZY)
     private Set<Lesson> lessons = new HashSet<>();

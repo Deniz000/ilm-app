@@ -1,6 +1,6 @@
-package com.ilim.app.business.concretes;
+package com.ilim.app.business.impl;
 
-import com.ilim.app.business.abstracts.AttendanceService;
+import com.ilim.app.business.services.AttendanceService;
 import com.ilim.app.dataAccess.AttendanceRepository;
 import com.ilim.app.entities.Attendance;
 import jakarta.persistence.EntityNotFoundException;

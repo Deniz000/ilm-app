@@ -1,7 +1,7 @@
 package com.ilim.app.business.services;
 
-import com.ilim.app.business.dto.material.MaterialRequest;
-import com.ilim.app.business.dto.material.MaterialResponse;
+import com.ilim.app.dto.material.MaterialRequest;
+import com.ilim.app.dto.material.MaterialResponse;
 
 import java.util.List;
 

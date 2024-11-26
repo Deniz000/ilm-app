@@ -1,4 +1,4 @@
-package com.ilim.app.business.dto.note;
+package com.ilim.app.dto.note;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
