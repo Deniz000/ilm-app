@@ -3,12 +3,16 @@ package com.ilim.app.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-@Data
+@Setter
+@Getter
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
@@ -27,8 +31,13 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany(mappedBy = "users", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private Set<Role> roles = new HashSet<>();
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+    )
+    private List<Role> roles;
 
     // Kullanıcının katıldığı classroom'lar için Many-to-Many ilişki
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
