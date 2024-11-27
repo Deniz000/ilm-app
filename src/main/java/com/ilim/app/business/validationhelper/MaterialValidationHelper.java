@@ -6,9 +6,9 @@ import com.ilim.app.dataAccess.LessonRepository;
 import com.ilim.app.dataAccess.MaterialRepository;
 import com.ilim.app.entities.Lesson;
 import com.ilim.app.entities.Material;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public record MaterialValidationHelper(MaterialRepository materialRepository,
                                        LessonRepository lessonRepository) {
 

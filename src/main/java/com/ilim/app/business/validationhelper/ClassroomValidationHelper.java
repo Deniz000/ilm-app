@@ -8,11 +8,10 @@ import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.entities.Classroom;
 import com.ilim.app.entities.ClassroomUser;
 import com.ilim.app.entities.UserEntity;
-import org.springframework.stereotype.Service;
-
+import org.springframework.stereotype.Component;
 import java.util.List;
 
-@Service
+@Component
 public record ClassroomValidationHelper(
         ClassroomRepository classroomRepository,
         UserRepository userRepository,

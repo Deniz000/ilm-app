@@ -7,10 +7,8 @@ import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.dto.notification.CreateNotificationRequest;
 import com.ilim.app.entities.Notification;
 import com.ilim.app.entities.UserEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public record NotificationValidationHelper(
         UserRepository userRepository,

@@ -11,12 +11,11 @@ import com.ilim.app.dto.calendar.UpdateCalendarEventRequest;
 import com.ilim.app.entities.CalendarEvent;
 import com.ilim.app.entities.Lesson;
 import com.ilim.app.entities.UserEntity;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-@Slf4j
+
 @Component
 public record CalendarEventValidationHelper(
         UserRepository userRepository,
@@ -44,7 +43,6 @@ public record CalendarEventValidationHelper(
             try {
                 event.setEventType(CalendarEvent.EventType.valueOf(request.getEventType().toUpperCase()));
             } catch (IllegalArgumentException e) {
-                log.error("Invalid event type: {}", request.getEventType(), e);
                 throw new IllegalArgumentException("Invalid event type provided.");
             }
         }

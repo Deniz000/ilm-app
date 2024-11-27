@@ -3,9 +3,9 @@ package com.ilim.app.business.validationhelper;
 import com.ilim.app.core.exceptions.CategoryNotFoundException;
 import com.ilim.app.dataAccess.CategoryRepository;
 import com.ilim.app.entities.Category;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public record CategoryValidationHelper(CategoryRepository categoryRepository) {
     public Category getCategoryIfExists(Long id) {
         return categoryRepository.findById(id)

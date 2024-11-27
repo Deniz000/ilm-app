@@ -3,20 +3,21 @@ package com.ilim.app.core.util.mapper;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ModelMapperManager implements ModelMapperService {
 
-    private ModelMapper modelMapper;
+    private final ModelMapper modelMapper;
     @Override
     public ModelMapper forResponse() {
          this.modelMapper.getConfiguration()
                 .setAmbiguityIgnored(true)
-                .setMatchingStrategy(MatchingStrategies.LOOSE);
+                 .setSkipNullEnabled(true)
+                .setMatchingStrategy(MatchingStrategies.STRICT);
          return this.modelMapper;
+
     }
 
     @Override

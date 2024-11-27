@@ -4,9 +4,9 @@ import com.ilim.app.core.exceptions.AttendanceNotFoundException;
 import com.ilim.app.dataAccess.AttendanceRepository;
 import com.ilim.app.dto.attendance.CreateAttendanceRequest;
 import com.ilim.app.entities.Attendance;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public record AttendanceValidationHelper(AttendanceRepository attendanceRepository) {
 
     public void validateAttendanceRequest(CreateAttendanceRequest request) {

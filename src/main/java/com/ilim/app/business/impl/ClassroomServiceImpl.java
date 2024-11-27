@@ -6,7 +6,7 @@ import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.exceptions.UserNotTeacherException;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.ClassroomRepository;
-import com.ilim.app.dto.classroom.ClassroomRequest;
+import com.ilim.app.dto.classroom.CreateClassroomRequest;
 import com.ilim.app.dto.classroom.ClassroomResponse;
 import com.ilim.app.dto.classroom.JoinClassroomRequest;
 import com.ilim.app.entities.Classroom;
@@ -29,14 +29,15 @@ public class ClassroomServiceImpl implements ClassroomService {
     private final ClassroomValidationHelper validationHelper;
     private final ModelMapperService modelMapper;
 
-    public ClassroomResponse createClassroom(Long teacherId, ClassroomRequest request) {
+    public ClassroomResponse createClassroom(Long teacherId, CreateClassroomRequest request) {
         log.info("Creating Classroom");
         UserEntity teacher = validationHelper.getUserIfExists(teacherId);
-
-        if (teacher.getRoles().stream().noneMatch(role -> role.getName().equals(Role.RoleName.TEACHER))) {
-            throw new UserNotTeacherException("Only teachers can create classrooms");
-        }
+// çözülecek - user auth0 dan sonra
+//        if (teacher.getRoles().stream().noneMatch(role -> role.getName().equals(Role.RoleName.TEACHER))) {
+//            throw new UserNotTeacherException("Only teachers can create classrooms");
+//        }
         Classroom classroom = modelMapper.forRequest().map(request, Classroom.class);
+        classroom.setCreatedBy(teacher);
         String classCode = generateUniqueClassCode();
         classroom.setClassCode(classCode);
         classroomRepository.save(classroom);

@@ -11,9 +11,9 @@ import com.ilim.app.entities.Category;
 import com.ilim.app.entities.Classroom;
 import com.ilim.app.entities.Lesson;
 import com.ilim.app.entities.UserEntity;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 public record LessonValidationHelper(UserRepository userRepository, ClassroomRepository classroomRepository,
                                      LessonRepository lessonRepository, CategoryRepository categoryRepository) {
 

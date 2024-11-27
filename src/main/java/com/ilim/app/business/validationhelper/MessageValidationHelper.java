@@ -6,10 +6,8 @@ import com.ilim.app.dataAccess.MessageRepository;
 import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.dto.message.SendMessageRequest;
 import com.ilim.app.entities.Message;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 public record MessageValidationHelper(
         UserRepository userRepository,

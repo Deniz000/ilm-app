@@ -1,6 +1,7 @@
 package com.ilim.app.dataAccess;
 
 import com.ilim.app.entities.Message;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
