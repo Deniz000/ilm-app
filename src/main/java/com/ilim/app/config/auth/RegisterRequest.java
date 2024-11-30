@@ -1,4 +1,4 @@
-package com.ilim.app.controllers;
+package com.ilim.app.config.auth;
 
 import com.ilim.app.business.validation.PasswordMatches;
 import com.ilim.app.business.validation.ValidEmail;
@@ -10,14 +10,10 @@ import lombok.RequiredArgsConstructor;
 @Data
 @RequiredArgsConstructor
 @PasswordMatches
-public class UserDto {
+public class RegisterRequest {
     @NotNull
     @NotEmpty
-    private String firstName;
-
-    @NotNull
-    @NotEmpty
-    private String lastName;
+    private String userName;
 
     @NotNull
     @NotEmpty
@@ -29,5 +25,7 @@ public class UserDto {
     @NotEmpty
     private String email;
 
-    // standard getters and setters
+    @NotNull
+    @NotEmpty
+    private String role;
 }
