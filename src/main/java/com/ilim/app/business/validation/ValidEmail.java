@@ -1,4 +1,4 @@
-package com.ilim.app.business.emailvalidation;
+package com.ilim.app.business.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

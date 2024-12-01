@@ -4,15 +4,12 @@ import com.ilim.app.config.JwtService;
 import com.ilim.app.core.exceptions.InvalidRoleException;
 import com.ilim.app.dataAccess.RoleRepository;
 import com.ilim.app.dataAccess.UserRepository;
-import com.ilim.app.entities.Authentication;
 import com.ilim.app.entities.Role;
 import com.ilim.app.entities.UserEntity;
-import io.jsonwebtoken.Jwts;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -51,7 +48,7 @@ public class AuthenticationService {
                         request.getPassword()
                 )
         );
-        var user = userRepository.findByEmail(request.getEmail());
+        var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
@@ -74,4 +71,5 @@ public class AuthenticationService {
             default -> "not found";
         };
     }
+
 }

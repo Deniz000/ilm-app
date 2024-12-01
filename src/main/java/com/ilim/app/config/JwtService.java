@@ -2,24 +2,21 @@ package com.ilim.app.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
-import static io.jsonwebtoken.SignatureAlgorithm.*;
-
 @Service
 public class JwtService {
 
-    //    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:360000}") // Varsayılan olarak 24 saat (ms cinsinden)
+    private long jwtExpirationMs;//    @Value("${jwt.expiration}")
 //    private long jwtExpirationMs;
     @Value("${jwt.secret}")
     private String secretKey;
@@ -44,7 +41,7 @@ public class JwtService {
 
     private SecretKey getSignInKey() {
         byte[] bytes = Base64.getDecoder()
-                .decode(secretKey.getBytes(StandardCharsets.UTF_8));
+                .decode(secretKey);
         return new SecretKeySpec(bytes, "HmacSHA256"); }
 
 //    private SecretKey getSignInKey() {
@@ -56,7 +53,7 @@ public class JwtService {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 100 * 60 * 24))
+                .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSignInKey())
                 .compact();
     }

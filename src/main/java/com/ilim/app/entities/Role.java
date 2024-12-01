@@ -22,10 +22,6 @@ public class Role {
     @Column(name = "name", nullable = false, unique = true)
     private RoleName name;
 
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private List<UserEntity> users;
-
-
     public enum RoleName {
         ADMIN,
         TEACHER,

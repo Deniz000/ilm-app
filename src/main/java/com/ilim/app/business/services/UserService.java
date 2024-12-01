@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface UserService {
-    UserWithRolesDTO createUser(UserRequest request);
     UserWithRolesDTO getUserById(Long id);
     UserWithRolesDTO updateUser(Long id, UserRequest userDetails);
     void deleteUser(Long id);
-    List<UserWithRolesDTO> getAllUsers();
+ //   List<UserWithRolesDTO> getAllUsers();
 }

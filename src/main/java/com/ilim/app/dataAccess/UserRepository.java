@@ -1,12 +1,10 @@
 package com.ilim.app.dataAccess;
 
-import com.ilim.app.dto.user.UserWithRolesDTO;
 import com.ilim.app.entities.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,7 +13,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     boolean existsByUsername(String name);
 
-    boolean existsById(Long userId);
+    boolean existsById(Long id);
 
     boolean existsByEmail(String email);
 
@@ -32,18 +30,19 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 //            """, nativeQuery = true)
 //    List<UserWithRolesDTO> fetchUsersWithRoles();
 
-    @Query(value = """
-                SELECT 
-                    u.id, 
-                    u.email, 
-                    u.username, 
-                    u.password, 
-                    GROUP_CONCAT(r.name) AS roles
-                FROM users u
-                JOIN users_roles ur ON u.id = ur.user_id
-                JOIN roles r ON ur.role_id = r.id
-                GROUP BY u.id, u.email, u.username, u.password
-            """, nativeQuery = true)
-    List<Object[]> fetchUsersWithRoles();
+//    @Query(value = """
+//                SELECT
+//                    u.id,
+//                    u.email,
+//                    u.username,
+//                    u.password,
+//                    GROUP_CONCAT(r.name) AS roles
+//                FROM users u
+//                JOIN user_roles ur ON u.id = ur.user_id
+//                JOIN roles r ON ur.role_id = r.id
+//                GROUP BY u.id, u.email, u.username, u.password
+//            """, nativeQuery = true)
+//    List<Object[]> fetchUsersWithRoles();
 
+    Optional<UserEntity> findByEmail(String email);
 }

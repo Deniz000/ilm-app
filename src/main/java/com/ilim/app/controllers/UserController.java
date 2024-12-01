@@ -26,11 +26,6 @@ public class UserController {
         Role role = roleServiceService.getRoleByName(r);
         return ResponseEntity.ok(role);
     }
-    @PostMapping
-    public ResponseEntity<UserWithRolesDTO> createUser(@Valid @RequestBody UserRequest request) {
-        UserWithRolesDTO createdUser = userService.createUser(request);
-        return ResponseEntity.ok(createdUser);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserWithRolesDTO> getUserById(@Valid @PathVariable Long id) {
@@ -49,9 +44,9 @@ public class UserController {
         UserWithRolesDTO user = userServiceImp.updateUser(id, request);
         return ResponseEntity.ok(user);
     }
-    @GetMapping
-    public ResponseEntity<List<UserWithRolesDTO>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
+//    @GetMapping
+//    public ResponseEntity<List<UserWithRolesDTO>> getAllUsers() {
+//        return ResponseEntity.ok(userService.getAllUsers());
+//    }
 
 }
