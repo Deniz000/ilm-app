@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class LessonResponse {
     private String categoryName;
-    private String callerUsername;
+    private String callerEmail;
     private String title;
     private String content;
     private LocalDateTime callTime;

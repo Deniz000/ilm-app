@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ilim.app.core.util.EntityUpdateUtil.updateIfNotNull;
+
 @Slf4j
 @Service
 @Transactional
@@ -25,37 +27,28 @@ public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
     private final LessonValidationHelper validationHelper;
-    private ModelMapperService modelMapperService;
+    private final ModelMapperService modelMapperService;
 
+    @Override
+    @Transactional
     public LessonResponse createLesson(LessonRequest lessonRequest) {
-        log.info("Create lesson: {}", lessonRequest.getTitle());
+        log.info("Creating lesson with title: {}", lessonRequest.getTitle());
+
         if (validationHelper.validateLessonByTitle(lessonRequest.getTitle())) {
-            throw new EntityAlreadyExits("Lesson already exists" + lessonRequest.getTitle());
+            throw new EntityAlreadyExits("Lesson already exists: " + lessonRequest.getTitle());
         }
-        Lesson lesson = modelMapperService.forRequest().map(lessonRequest, Lesson.class);
-        lessonRepository.save(lesson);
-        log.info("Lesson created: {}", lesson);
-        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
-
-    }
-
-    public LessonResponse getLessonById(Long id) {
-        log.info("Getting Lesson by id: {}", id);
-        Lesson lesson = validationHelper.getLessonIfExists(id);
-        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
-    }
-
-    public LessonResponse updateLesson(Long id, LessonUpdateRequest lessonRequest) {
-        log.info("Updating calendar event with ID: {}", id);
-        Lesson lesson = validationHelper.getLessonIfExists(id);
+        Classroom classroom = validationHelper.getClassroomIfExists(lessonRequest.getClassroomId());
+        Category category = validationHelper.getCategoryIfExists(lessonRequest.getCategoryId());
+        UserEntity teacher = validationHelper.getUserIfExists(lessonRequest.getCallerId());
+        Lesson lesson = new Lesson();
         modelMapperService.forRequest().map(lessonRequest, lesson);
-        lesson.setCategory(validationHelper.getCategoryIfExists(id));
-        lesson.setClassroom(validationHelper.getClassroomIfExists(id));
+        lesson.setClassroom(classroom);
+        lesson.setCategory(category);
+        lesson.setCaller(teacher);
         lessonRepository.save(lesson);
-        log.info("Calendar event updated with ID: {}", id);
-        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
+        log.error("Lesson created successfully: {}", lesson);
+        return modelMapperService.forResponse().map(lesson,LessonResponse.class);
     }
-
 
     @Override
     public List<LessonResponse> getAllLessons() {
@@ -65,6 +58,48 @@ public class LessonServiceImpl implements LessonService {
                         .map(lesson,LessonResponse.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public LessonResponse getLessonById(Long id) {
+        log.info("Getting Lesson by id: {}", id);
+        Lesson lesson = validationHelper.getLessonIfExists(id);
+        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
+    }
+
+    @Override
+    @Transactional
+    public LessonResponse updateLesson(Long id, LessonUpdateRequest request) {
+        log.info("Updating lesson with ID: {}", id);
+
+        // İlgili dersin varlığını doğrula ve yükle
+        Lesson lesson = validationHelper.getLessonIfExists(id);
+
+        // Güncelleme yapılacak alanları kontrol et ve ata
+        if (request.getCategoryId() != null) {
+            Category category = validationHelper.getCategoryIfExists(request.getCategoryId());
+            lesson.setCategory(category);
+            log.info("Category updated for lesson ID: {}", id);
+        }
+
+        if (request.getCallerId() != null) {
+            UserEntity caller = validationHelper.getUserIfExists(request.getCallerId());
+            lesson.setCaller(caller);
+            log.info("Caller updated for lesson ID: {}", id);
+        }
+        updateIfNotNull(lesson::setTitle, request.getTitle());
+        updateIfNotNull(lesson::setContent, request.getContent());
+        updateIfNotNull(lesson::setCallTime, request.getCallTime());
+        updateIfNotNull(lesson::setCallLink, request.getCallLink());
+
+        // Değişiklikleri kaydet
+        lessonRepository.save(lesson);
+        log.info("Lesson updated successfully with ID: {}", id);
+
+        // Güncellenmiş dersi yanıt DTO'suna dönüştür
+        return modelMapperService.forResponse().map(lesson, LessonResponse.class);
+    }
+
+
 
     public List<LessonResponse> getLessonsForUser(Long userId) {
         log.info("Getting all lessons for user: {}", userId);

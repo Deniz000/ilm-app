@@ -7,9 +7,9 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class Formatter {
-     public String getDate() {
-         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
-        return now.format(formatter);
+    public String getFormattedCallTime(LocalDateTime callTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return callTime != null ? callTime.format(formatter) : null;
     }
+
 }
