@@ -44,7 +44,7 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         log.info("Fetching events for lesson ID: {}", lessonId);
         validate.validateLessonExists(lessonId);
 
-        return calendarEventRepository.findByLessonId(lessonId).stream()
+        return calendarEventRepository.findCalendarEventByLessonId(lessonId).stream()
                 .map(event -> modelMapperService.forResponse().map(event, CalendarEventResponse.class))
                 .collect(Collectors.toList());
     }

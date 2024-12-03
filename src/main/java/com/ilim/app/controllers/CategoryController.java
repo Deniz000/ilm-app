@@ -4,6 +4,7 @@ import com.ilim.app.business.services.CategoryService;
 import com.ilim.app.dto.category.CategoryRequest;
 import com.ilim.app.dto.category.CategoryResponse;
 import com.ilim.app.dto.category.UpdateCategoryRequest;
+import com.ilim.app.dto.lesson.LessonResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -48,5 +49,11 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{categoryId}/lessons")
+    public ResponseEntity<List<LessonResponse>> getLessonsByCategoryId(@PathVariable Long categoryId) {
+        List<LessonResponse> lessons = categoryService.getLessonsByCategoryId(categoryId);
+        return ResponseEntity.ok(lessons);
     }
 }

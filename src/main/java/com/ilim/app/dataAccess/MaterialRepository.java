@@ -4,10 +4,10 @@ import com.ilim.app.entities.Material;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MaterialRepository extends JpaRepository<Material, Long> {
     boolean existsMaterialByTitle(String title);
-    List<Material> findByLessonId(Long lessonId);
-
-
+    Optional<List<Material>> findMaterialByLessonId(Long lessonId);
+    Optional<Material> findMaterialByTitle(String title);
 }

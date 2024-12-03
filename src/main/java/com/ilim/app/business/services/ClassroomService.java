@@ -8,7 +8,7 @@ import com.ilim.app.entities.UserEntity;
 import java.util.List;
 
 public interface ClassroomService {
-    ClassroomResponse createClassroom(Long teacherId, CreateClassroomRequest request);
+    ClassroomResponse createClassroom(CreateClassroomRequest request);
     void joinClassroom(JoinClassroomRequest request);
     public List<UserEntity> listStudents(Long classroomId) ;
     void deleteClassroom(Long classroomId);

@@ -5,7 +5,6 @@ import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.RoleRepository;
 import com.ilim.app.entities.Role;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

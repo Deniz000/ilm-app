@@ -6,7 +6,7 @@ import com.ilim.app.entities.UserEntity;
 import org.springframework.stereotype.Component;
 
 @Component
-public record UserValidationHelper(
+public record sil(
         UserRepository userRepository
 ) {
 //    public UserEntity validateUser(String username, String password) {}

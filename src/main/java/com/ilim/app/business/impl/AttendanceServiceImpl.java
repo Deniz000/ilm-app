@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -32,7 +33,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         validate.validateAttendanceRequest(request);
         log.info("Creating new Attendance: {}", request.getUserId());
         Attendance attendance = this.modelMapperService.forRequest().map(request, Attendance.class);
-        attendance.setDate(new Formatter().getDate());
+        attendance.setDate(new Formatter().getFormattedCallTime(LocalDateTime.now()));
         log.info("Attendance created: {}", attendance.getUser().getUsername());
         attendanceRepository.save(attendance);
     }

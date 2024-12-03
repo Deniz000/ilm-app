@@ -17,8 +17,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     boolean existsByEmail(String email);
 
-    @Query("SELECT u.username FROM UserEntity u JOIN u.lessons l WHERE l.id = :lessonId")
-    Set<String> findParticipantNamesByLessonId(@Param("lessonId") Long lessonId);
+//    @Query("SELECT u.username FROM UserEntity u JOIN u.lessons l WHERE l.id = :lessonId")
+//    Set<String> findParticipantNamesByLessonId(@Param("lessonId") Long lessonId);
 
 //    @Query(value = """
 //                SELECT u.id AS id, u.email AS email, u.username AS username, u.password AS password,

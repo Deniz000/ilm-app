@@ -1,27 +1,16 @@
 package com.ilim.app.business.impl;
 
-import com.ilim.app.business.services.RoleService;
 import com.ilim.app.business.services.UserService;
-import com.ilim.app.business.validationhelper.UserValidationHelper;
-import com.ilim.app.core.exceptions.UserNotFoundException;
+import com.ilim.app.business.validationhelper.ValidationHelper;
+import com.ilim.app.business.validationhelper.sil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.dto.user.UserRequest;
 import com.ilim.app.dto.user.UserWithRolesDTO;
-import com.ilim.app.entities.Role;
 import com.ilim.app.entities.UserEntity;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.TypeMap;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,7 +19,7 @@ public class UserServiceImp implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapperService modelMapper;
-    private final UserValidationHelper validationHelper;
+    private final ValidationHelper validationHelper;
 
     private String takeRoleName(String roleName) {
         return switch (roleName.toUpperCase()) {
@@ -42,20 +31,20 @@ public class UserServiceImp implements UserService {
     }
 
     public UserWithRolesDTO getUserById(Long id) {
-        UserEntity user = validationHelper.getUserIfExists(id);
+        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
     }
 
     @Override
     public UserWithRolesDTO updateUser(Long id, UserRequest request) {
-        UserEntity user = validationHelper.getUserIfExists(id);
+        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         modelMapper.forRequest().map(request, user);
         return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
     }
 
     @Override
     public void deleteUser(Long id) {
-        UserEntity user = validationHelper.getUserIfExists(id);
+        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         userRepository.delete(user);
     }
 //    @Override

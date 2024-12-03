@@ -15,7 +15,7 @@ public class ModelMapperManager implements ModelMapperService {
          this.modelMapper.getConfiguration()
                 .setAmbiguityIgnored(true)
                  .setSkipNullEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
+                .setMatchingStrategy(MatchingStrategies.LOOSE);
          return this.modelMapper;
 
     }

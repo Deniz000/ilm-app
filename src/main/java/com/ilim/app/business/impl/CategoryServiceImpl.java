@@ -1,6 +1,7 @@
 package com.ilim.app.business.impl;
 
-import com.ilim.app.business.validationhelper.CategoryValidationHelper;
+import com.ilim.app.business.validationhelper.LessonValidator;
+import com.ilim.app.business.validationhelper.ValidationHelper;
 import com.ilim.app.core.util.EntityUpdateUtil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dto.category.CategoryRequest;
@@ -9,8 +10,10 @@ import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.dataAccess.CategoryRepository;
 import com.ilim.app.dto.category.CategoryResponse;
 import com.ilim.app.dto.category.UpdateCategoryRequest;
+import com.ilim.app.dto.lesson.LessonResponse;
 import com.ilim.app.entities.Category;
 import com.ilim.app.entities.Classroom;
+import com.ilim.app.entities.Lesson;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,17 +29,17 @@ import java.util.stream.Collectors;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final CategoryValidationHelper validationHelper;
     private final ModelMapperService modelMapperService;
+    private final ValidationHelper validationHelper;
 
     @Override
     public CategoryResponse createCategory(CategoryRequest request) {
         log.error("Creating category: {}", request.getName());
 
-        if(validationHelper.validateCategoryByNameIfExists(request.getName())){
+        if (validationHelper.validateByName(Category.class, request.getName())) {
             throw new EntityAlreadyExits("Category with name " + request.getName() + " already exists");
         }
-        Classroom classroom = validationHelper.getCategory(request.getClassroomId());
+        Classroom classroom = validationHelper.getIfExistsById(Classroom.class, request.getClassroomId());
         Category category = modelMapperService.forRequest().map(request, Category.class);
         category.setClassroom(classroom);
         categoryRepository.save(category);
@@ -47,14 +50,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponse getCategoryById(Long id) {
         log.info("Fetching category by id {}", id);
-        Category category = validationHelper.getCategoryIfExists(id);
+        Category category = validationHelper.getIfExistsById(Category.class, id);
         return modelMapperService.forResponse().map(category, CategoryResponse.class);
     }
 
     @Override
     public CategoryResponse updateCategory(Long id, UpdateCategoryRequest request) {
         log.info("Updating calendar event with ID: {}", id);
-        Category category = validationHelper.getCategoryIfExists(id);
+        Category category = validationHelper.getIfExistsById(Category.class, id);
         EntityUpdateUtil.updateIfNotNull(category::setName, request.getName());
         EntityUpdateUtil.updateIfNotNull(category::setDescription, request.getDescription());
         categoryRepository.save(category);
@@ -65,9 +68,16 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryResponse> getAllCategories() {
         log.error("Fetching all categories");
-        return categoryRepository.findAll()
-                .stream()
-                .map(category -> modelMapperService.forResponse().map(category, CategoryResponse.class))
+        return categoryRepository.findAll().stream().map(category -> modelMapperService.forResponse().map(category, CategoryResponse.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<LessonResponse> getLessonsByCategoryId(Long categoryId) {
+        LessonValidator lessonValidator = validationHelper.getLessonsValidator();
+        List<Lesson> lessons = lessonValidator.getLessonsByCategoryId(categoryId);
+        return lessons.stream()
+                .map(lesson -> modelMapperService.forResponse()
+                        .map(lesson, LessonResponse.class))
                 .collect(Collectors.toList());
     }
 
@@ -75,7 +85,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Long id) {
         log.info("Deleting calendar event with ID: {}", id);
-        Category category = validationHelper.getCategoryIfExists(id);
+        Category category = validationHelper.getIfExistsById(Category.class, id);
         categoryRepository.deleteById(category.getId());
         log.info("Notification with ID: {} deleted.", id);
 

@@ -25,7 +25,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable) // CSRF korumasını devre dışı bırak
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**").permitAll() // Belirli endpoint'lere izin ver
+                        .requestMatchers("/api/auth/**").permitAll()// Belirli endpoint'lere izin ver
+                        .requestMatchers("/api/categories/**").permitAll()
+                        .requestMatchers("/api/lessons/**").permitAll()
+                        .requestMatchers("/api/classrooms/**").permitAll()
+                        .requestMatchers("/api/materials/**").permitAll()
                         .anyRequest().authenticated() // Geri kalan endpoint'ler için kimlik doğrulama iste
                 )
                 .sessionManagement(session -> session

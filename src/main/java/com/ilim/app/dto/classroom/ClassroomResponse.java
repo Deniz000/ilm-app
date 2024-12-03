@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClassroomResponse {
-    private String createdBy; //TODO silebilirsin
+    private String username;
     private String name;
     private String classCode;
     private LocalDateTime createdAt;

@@ -18,9 +18,10 @@ public class ClassroomController {
 
     private final ClassroomService classroomService;
 
-    @PostMapping("/{teacherId}")
-    public ResponseEntity<ClassroomResponse> createClassroom(@Valid  @PathVariable Long teacherId, @Valid  @RequestBody CreateClassroomRequest request) {
-        return ResponseEntity.ok(classroomService.createClassroom(teacherId, request));
+    //tested - 03
+    @PostMapping
+    public ResponseEntity<ClassroomResponse> createClassroom(@Valid @RequestBody CreateClassroomRequest request) {
+        return ResponseEntity.ok(classroomService.createClassroom(request));
     }
 
     @PostMapping("/join")
@@ -29,8 +30,9 @@ public class ClassroomController {
         return ResponseEntity.noContent().build();
     }
 
+    //tested - 03
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteClassroom(@Valid @PathVariable Long id) {
+    public ResponseEntity<Void> deleteClassroom(@PathVariable Long id) {
         classroomService.deleteClassroom(id);
         return ResponseEntity.noContent().build();
     }

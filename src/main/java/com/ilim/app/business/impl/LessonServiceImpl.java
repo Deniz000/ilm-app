@@ -1,13 +1,19 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.LessonService;
-import com.ilim.app.business.validationhelper.LessonValidationHelper;
+import com.ilim.app.business.validationhelper.CalendarEventValidator;
+import com.ilim.app.business.validationhelper.MaterialValidator;
+import com.ilim.app.business.validationhelper.NoteValidator;
+import com.ilim.app.business.validationhelper.ValidationHelper;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.LessonRepository;
+import com.ilim.app.dto.calendar.CalendarEventResponse;
 import com.ilim.app.dto.lesson.LessonRequest;
 import com.ilim.app.dto.lesson.LessonResponse;
 import com.ilim.app.dto.lesson.LessonUpdateRequest;
+import com.ilim.app.dto.material.MaterialResponse;
+import com.ilim.app.dto.note.NoteResponse;
 import com.ilim.app.entities.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,20 +32,20 @@ import static com.ilim.app.core.util.EntityUpdateUtil.updateIfNotNull;
 public class LessonServiceImpl implements LessonService {
 
     private final LessonRepository lessonRepository;
-    private final LessonValidationHelper validationHelper;
     private final ModelMapperService modelMapperService;
+    private final ValidationHelper validationHelper;
 
     @Override
     @Transactional
     public LessonResponse createLesson(LessonRequest lessonRequest) {
         log.info("Creating lesson with title: {}", lessonRequest.getTitle());
 
-        if (validationHelper.validateLessonByTitle(lessonRequest.getTitle())) {
+        if (validationHelper.validateByName(Lesson.class, lessonRequest.getTitle())) {
             throw new EntityAlreadyExits("Lesson already exists: " + lessonRequest.getTitle());
         }
-        Classroom classroom = validationHelper.getClassroomIfExists(lessonRequest.getClassroomId());
-        Category category = validationHelper.getCategoryIfExists(lessonRequest.getCategoryId());
-        UserEntity teacher = validationHelper.getUserIfExists(lessonRequest.getCallerId());
+        Classroom classroom = validationHelper.getIfExistsById(Classroom.class, lessonRequest.getClassroomId());
+        Category category = validationHelper.getIfExistsById(Category.class, lessonRequest.getCategoryId());
+        UserEntity teacher = validationHelper.getIfExistsById(UserEntity.class, lessonRequest.getCallerId());
         Lesson lesson = new Lesson();
         modelMapperService.forRequest().map(lessonRequest, lesson);
         lesson.setClassroom(classroom);
@@ -62,7 +68,7 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public LessonResponse getLessonById(Long id) {
         log.info("Getting Lesson by id: {}", id);
-        Lesson lesson = validationHelper.getLessonIfExists(id);
+        Lesson lesson = validationHelper.getIfExistsById(Lesson.class, id);
         return modelMapperService.forResponse().map(lesson, LessonResponse.class);
     }
 
@@ -72,17 +78,17 @@ public class LessonServiceImpl implements LessonService {
         log.info("Updating lesson with ID: {}", id);
 
         // İlgili dersin varlığını doğrula ve yükle
-        Lesson lesson = validationHelper.getLessonIfExists(id);
+        Lesson lesson = validationHelper.getIfExistsById(Lesson.class, id);
 
         // Güncelleme yapılacak alanları kontrol et ve ata
         if (request.getCategoryId() != null) {
-            Category category = validationHelper.getCategoryIfExists(request.getCategoryId());
+            Category category = validationHelper.getIfExistsById(Category.class, request.getCategoryId());
             lesson.setCategory(category);
             log.info("Category updated for lesson ID: {}", id);
         }
 
         if (request.getCallerId() != null) {
-            UserEntity caller = validationHelper.getUserIfExists(request.getCallerId());
+            UserEntity caller = validationHelper.getIfExistsById(UserEntity.class, request.getCallerId());
             lesson.setCaller(caller);
             log.info("Caller updated for lesson ID: {}", id);
         }
@@ -99,30 +105,47 @@ public class LessonServiceImpl implements LessonService {
         return modelMapperService.forResponse().map(lesson, LessonResponse.class);
     }
 
-
-
     public List<LessonResponse> getLessonsForUser(Long userId) {
         log.info("Getting all lessons for user: {}", userId);
-        UserEntity user = validationHelper.getUserIfExists(userId);
+        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, userId);
         return lessonRepository.findLessonsByUserId(user.getId()).stream()
                 .map(lesson -> modelMapperService.forResponse()
                         .map(lesson,LessonResponse.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 
-    public List<LessonResponse> getLessonsForClassroom(Long classroomId) {
-        log.info("Getting all lessons for classroom: {}", classroomId);
-        Classroom classroom = validationHelper.getClassroomIfExists(classroomId);
-        return lessonRepository.findLessonByClassroom_Id(classroom.getId()).stream()
-                .map(lesson -> modelMapperService.forResponse().map(lesson,LessonResponse.class))
-                .collect(Collectors.toList());
+    @Override
+    public List<MaterialResponse> getMaterialsByLessonId(Long id) {
+        MaterialValidator materialValidator = validationHelper.getMaterialsValidator();
+        List<Material> materials = materialValidator.getMaterialsByLessonId(id);
+        return materials.stream().map(
+                material ->modelMapperService.forResponse().map(material, MaterialResponse.class)
+        ).toList();
+    }
+
+    @Override
+    public List<NoteResponse> getNotesByLessonId(Long id) {
+        NoteValidator noteValidator = validationHelper.getNotesValidator();
+        List<Note> notes = noteValidator.getNotesByLessonId(id);
+        return notes.stream().map(
+                note -> modelMapperService.forResponse().map(note, NoteResponse.class)
+        ).toList();
+    }
+
+    @Override
+    public List<CalendarEventResponse> getCalendarByLessonId(Long id) {
+        CalendarEventValidator calendarEventValidator = validationHelper.getEventsValidator();
+        List<CalendarEvent> calendars = calendarEventValidator.getCalendarEventsByLessonId(id);
+        return calendars.stream()
+                .map(calendar -> modelMapperService.forResponse().map(calendar, CalendarEventResponse.class))
+                .toList();
     }
 
 
     @Override
     public void deleteLesson(Long id) {
         log.info("Deleting calendar event with ID: {}", id);
-        Lesson lesson = validationHelper.getLessonIfExists(id);
+        Lesson lesson = validationHelper.getIfExistsById(Lesson.class, id);
         lessonRepository.deleteById(lesson.getId());
         log.info("Notification with ID: {} deleted.", id);
 

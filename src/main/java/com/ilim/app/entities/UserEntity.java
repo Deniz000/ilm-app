@@ -1,6 +1,5 @@
 package com.ilim.app.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -41,12 +40,20 @@ public class UserEntity implements UserDetails {
     )
     private List<Role> roles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private Set<ClassroomUser> relationOfClassrom = new HashSet<>();
-
     @ManyToMany(mappedBy = "participants", fetch = FetchType.LAZY)
     private Set<Lesson> lessons = new HashSet<>();
+
+    @OneToMany(mappedBy = "teacher", fetch = FetchType.LAZY)
+    private List<Classroom> classrooms; // Teacher olarak eklenirse Classroomları tutar
+
+    @ManyToMany(mappedBy = "students")
+    private List<Classroom> enrolledClassrooms; // Student olarak kayıtlı Classroomlar
+
+    @OneToMany(mappedBy = "createdBy")
+    private List<Note> notes;
+
+    @OneToMany(mappedBy = "uploadedBy")
+    private List<Material> materials;
 
     @Override
     public String getUsername() {

@@ -26,5 +26,8 @@ public class Material {
     @JoinColumn(name = "lesson_id", referencedColumnName = "id", nullable = false)
     private Lesson lesson;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uploaded_by")
+    private UserEntity uploadedBy;
 
 }
