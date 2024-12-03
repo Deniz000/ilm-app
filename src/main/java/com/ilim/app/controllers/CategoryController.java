@@ -3,6 +3,7 @@ package com.ilim.app.controllers;
 import com.ilim.app.business.services.CategoryService;
 import com.ilim.app.dto.category.CategoryRequest;
 import com.ilim.app.dto.category.CategoryResponse;
+import com.ilim.app.dto.category.UpdateCategoryRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,28 +18,34 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    //tested - 03
     @PostMapping
     public ResponseEntity<CategoryResponse> createCategory(@Valid @RequestBody CategoryRequest request) {
         return ResponseEntity.ok(categoryService.createCategory(request));
     }
 
+    //tested - 03
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponse> getCategoryById(@Valid @PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponse> updateCategory(@Valid @PathVariable Long id,@Valid  @RequestBody CategoryRequest request) {
-        return ResponseEntity.ok(categoryService.updateCategory(id, request));
-    }
-
+    //tested - 03
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
+    //tested - 03
+    @PutMapping
+    public ResponseEntity<CategoryResponse> updateCategory(@Valid @RequestBody UpdateCategoryRequest request) {
+        return ResponseEntity.ok(categoryService.updateCategory(request.getId(), request));
+    }
+
+
+    //tested - 03
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@Valid @PathVariable Long id) {
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }

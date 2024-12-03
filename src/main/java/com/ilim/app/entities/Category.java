@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -24,9 +22,12 @@ public class Category {
     @Column(name = "description")
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-    @JoinColumn(name = "lesson_id")
-    private Set<Lesson> lessons = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "classroom_id", nullable = false)
+    private Classroom classroom;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private Set<Lesson> lessons;
 
     }
 
