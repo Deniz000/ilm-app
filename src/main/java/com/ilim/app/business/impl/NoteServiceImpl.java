@@ -4,7 +4,6 @@ import com.ilim.app.business.services.NoteService;
 import com.ilim.app.business.validationhelper.NoteValidator;
 import com.ilim.app.business.validationhelper.ValidationHelper;
 import com.ilim.app.core.exceptions.NoteNotFoundException;
-import com.ilim.app.core.util.EntityUpdateUtil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.NoteRepository;
 import com.ilim.app.dto.note.NoteRequest;
@@ -18,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ilim.app.core.util.EntityUpdateUtil.*;
 
 @Slf4j
 @Service
@@ -57,9 +58,9 @@ public class NoteServiceImpl implements NoteService {
     public NoteResponse updateNote(Long id, NoteRequest request) {
         log.info("Updating note with ID: {}", id);
         Note note = validationHelper.getIfExistsById(Note.class, id);
-        EntityUpdateUtil.updateIfNotNull(note::setTitle, request.getTitle());
-        EntityUpdateUtil.updateIfNotNull(note::setContent, request.getContent());
-        EntityUpdateUtil.updateIfNotNull(note::setUpdatedAt, request.getUpdatedAt());
+        updateIfNotNull(note::setTitle, request.getTitle());
+        updateIfNotNull(note::setContent, request.getContent());
+        updateIfNotNull(note::setUpdatedAt, request.getUpdatedAt());
         log.info("Note updated with ID: {}", id);
         return modelMapperService.forResponse().map(noteRepository.save(note), NoteResponse.class);
     }

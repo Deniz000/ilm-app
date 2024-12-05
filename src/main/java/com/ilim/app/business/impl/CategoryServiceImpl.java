@@ -2,7 +2,6 @@ package com.ilim.app.business.impl;
 
 import com.ilim.app.business.validationhelper.LessonValidator;
 import com.ilim.app.business.validationhelper.ValidationHelper;
-import com.ilim.app.core.util.EntityUpdateUtil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dto.category.CategoryRequest;
 import com.ilim.app.business.services.CategoryService;
@@ -21,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ilim.app.core.util.EntityUpdateUtil.*;
 
 @Slf4j
 @Service
@@ -58,8 +59,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponse updateCategory(Long id, UpdateCategoryRequest request) {
         log.info("Updating calendar event with ID: {}", id);
         Category category = validationHelper.getIfExistsById(Category.class, id);
-        EntityUpdateUtil.updateIfNotNull(category::setName, request.getName());
-        EntityUpdateUtil.updateIfNotNull(category::setDescription, request.getDescription());
+        updateIfNotNull(category::setName, request.getName());
+        updateIfNotNull(category::setDescription, request.getDescription());
         categoryRepository.save(category);
         log.info("Calendar event updated with ID: {}", id);
         return modelMapperService.forResponse().map(category, CategoryResponse.class);

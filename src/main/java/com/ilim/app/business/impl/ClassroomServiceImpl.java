@@ -6,7 +6,6 @@ import com.ilim.app.business.validationhelper.ValidationHelper;
 import com.ilim.app.core.exceptions.ClassroomNotFoundException;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.exceptions.UserNotTeacherException;
-import com.ilim.app.core.util.EntityUpdateUtil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.core.util.result.ApiResponse;
 import com.ilim.app.dataAccess.ClassroomRepository;
@@ -20,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.ilim.app.core.util.EntityUpdateUtil.*;
 
 @Slf4j
 @Service
@@ -106,7 +107,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     @Override
     public ClassroomResponse updateClassroom(Long id, UpdateClassroomRequest request) {
         Classroom classroom = validationHelper.getIfExistsById(Classroom.class, id);
-        EntityUpdateUtil.updateIfNotNull(classroom::setName, request.getName());
+        updateIfNotNull(classroom::setName, request.getName());
         classroomRepository.save(classroom);
         return modelMapper.forResponse().map(classroom, ClassroomResponse.class);
     }
