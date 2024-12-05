@@ -8,7 +8,5 @@ import java.util.List;
 public interface AttendanceService {
     void markAttendance(CreateAttendanceRequest request);
     void deleteAttendance(Long id);
-    List<AttendanceResponse> getAttendancesByLesson(Long lessonId);
-    List<AttendanceResponse> getAttendancesByUser(Long userId);
-    List<AttendanceResponse> getAttendanceByEvent(Long eventId); // Hoca için bir etkinlikteki katılım listesi
+    List<AttendanceResponse> getAttendances(String type, Long id);
 }

@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -48,31 +47,21 @@ public class AttendanceServiceImpl implements AttendanceService {
             attendanceRepository.save(attendance);
         }}
 
-
     @Override
     public void deleteAttendance(Long id) {
         log.info("Delete attendance: {}", id);
         Attendance attendance = validationHelper.getIfExistsById(Attendance.class, id);
         attendanceRepository.delete(attendance);
     }
-    @Override
-    public List<AttendanceResponse> getAttendancesByLesson(Long lessonId) {
-        return getAttendances(validator -> validator.getAttendancesByLesson(lessonId));
-    }
 
-    @Override
-    public List<AttendanceResponse> getAttendancesByUser(Long userId) {
-        return getAttendances(validator -> validator.getAttendancesByUser(userId));
-    }
-
-    @Override
-    public List<AttendanceResponse> getAttendanceByEvent(Long eventId) {
-        return getAttendances(validator -> validator.getAttendanceByEvent(eventId));
-    }
-
-    private List<AttendanceResponse> getAttendances(Function<AttendanceValidator, List<Attendance>> fetchFunction) {
+    public List<AttendanceResponse> getAttendances(String type, Long id) {
         AttendanceValidator attendanceValidator = validationHelper.getAttendanceValidator();
-        List<Attendance> attendances = fetchFunction.apply(attendanceValidator); // Dinamik çağrı
+        List<Attendance> attendances = switch (type.toUpperCase()) {
+            case "LESSON" -> attendanceValidator.getAttendancesByLesson(id);
+            case "USER" -> attendanceValidator.getAttendancesByUser(id);
+            case "EVENT" -> attendanceValidator.getAttendanceByEvent(id);
+            default -> throw new IllegalArgumentException("Invalid type: " + type);
+        };
         return attendances.stream()
                 .map(attendance -> modelMapperService.forResponse().map(attendance, AttendanceResponse.class))
                 .toList();
