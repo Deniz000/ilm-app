@@ -1,15 +1,16 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.ClassroomService;
-import com.ilim.app.business.validationhelper.ClassroomValidator;
+import com.ilim.app.business.validationhelper.UserValidator;
 import com.ilim.app.business.validationhelper.ValidationHelper;
+import com.ilim.app.core.exceptions.ClassroomNotFoundException;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.exceptions.UserNotTeacherException;
+import com.ilim.app.core.util.EntityUpdateUtil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
+import com.ilim.app.core.util.result.ApiResponse;
 import com.ilim.app.dataAccess.ClassroomRepository;
-import com.ilim.app.dto.classroom.CreateClassroomRequest;
-import com.ilim.app.dto.classroom.ClassroomResponse;
-import com.ilim.app.dto.classroom.JoinClassroomRequest;
+import com.ilim.app.dto.classroom.*;
 import com.ilim.app.entities.Classroom;
 import com.ilim.app.entities.Role;
 import com.ilim.app.entities.UserEntity;
@@ -50,34 +51,32 @@ public class ClassroomServiceImpl implements ClassroomService {
         return modelMapper.forResponse().map(classroom, ClassroomResponse.class);
     }
 
-    public void joinClassroom(JoinClassroomRequest request) {
+    public ApiResponse<Void> joinClassroom(JoinClassroomRequest request) {
         log.info("Joining classroom");
-        ClassroomValidator classroomValidator = validationHelper.getClassroomValidator();
-        Classroom classroom =  classroomValidator.findClassroomByClassCode(request.getClassCode());
+        log.info("getting classroom");
+        Classroom classroom = classroomRepository.findClassroomByClassCode(request.getClassCode())
+                .orElseThrow(() -> new ClassroomNotFoundException("Classroom not found"));
+
+        log.info("getting students");
+        UserValidator userValidator = validationHelper.getUserValidator();
         UserEntity student = validationHelper.getIfExistsById(UserEntity.class, request.getStudentId());
 
         if (student.getRoles().stream().noneMatch(role -> role.getName().equals(Role.RoleName.STUDENT))) {
             throw new IllegalArgumentException("Only students can join classrooms");
         }
-//        boolean alreadyJoined = validationHelper.validateClassroomUserIfExists(student.getId(), classroom.getId());
-//        if (alreadyJoined) {
-//            throw new EntityAlreadyExits("Student already joined this classroom");
-//        }
-//        //join
-//        ClassroomUser membership = new ClassroomUser();
-//        membership.setClassroom(classroom);
-//        membership.setStudent(student);
-//        log.info("Joined classroom");
-//        validationHelper.saveClassUserRepository(membership);
+        boolean alreadyJoined = userValidator.validateStudentIfEnrolled(classroom.getId(), student.getId());
+        if (alreadyJoined) {
+            throw new EntityAlreadyExits("Student already joined this classroom");
+        }
+        classroom.getStudents().add(student);
+        classroomRepository.save(classroom);
+        return new ApiResponse<>(true, "Student successfully joined the classroom", null);
     }
 
-    public List<UserEntity> listStudents(Long classroomId) {
+    public List<StudentsResponse> getStudentsInClassroom(Long classroomId) {
         log.info("All students is showed");
-//        return validationHelper.findClassroomUsersByStudentId(classroomId)
-//                .stream()
-//                .map(ClassroomUser::getStudent)
-//                .collect(Collectors.toList());
-        return List.of( new UserEntity());
+        UserValidator userValidator = validationHelper.getUserValidator();
+        return userValidator.getAllStudents(classroomId);
     }
 
     @Override
@@ -87,6 +86,29 @@ public class ClassroomServiceImpl implements ClassroomService {
         classroomRepository.delete(classroom);
         log.info("Notification with ID: {} deleted.", id);
 
+    }
+
+    @Override
+    public List<ClassroomResponse> getAllClassrooms() {
+        List<Classroom> classrooms = classroomRepository.findAll();
+        return classrooms.stream()
+                .map(classroom -> modelMapper.forResponse()
+                        .map(classroom, ClassroomResponse.class))
+                .toList();
+    }
+
+    @Override
+    public ClassroomResponse getClassroomById(Long id) {
+        Classroom classroom = validationHelper.getIfExistsById(Classroom.class, id);
+        return modelMapper.forResponse().map(classroom, ClassroomResponse.class);
+    }
+
+    @Override
+    public ClassroomResponse updateClassroom(Long id, UpdateClassroomRequest request) {
+        Classroom classroom = validationHelper.getIfExistsById(Classroom.class, id);
+        EntityUpdateUtil.updateIfNotNull(classroom::setName, request.getName());
+        classroomRepository.save(classroom);
+        return modelMapper.forResponse().map(classroom, ClassroomResponse.class);
     }
 
     private String generateUniqueClassCode() {

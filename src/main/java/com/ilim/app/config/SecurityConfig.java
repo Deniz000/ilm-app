@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/lessons/**").permitAll()
                         .requestMatchers("/api/classrooms/**").permitAll()
                         .requestMatchers("/api/materials/**").permitAll()
+                        .requestMatchers("/api/notes/**").permitAll()
                         .anyRequest().authenticated() // Geri kalan endpoint'ler için kimlik doğrulama iste
                 )
                 .sessionManagement(session -> session

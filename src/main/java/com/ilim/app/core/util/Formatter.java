@@ -1,4 +1,4 @@
-package com.ilim.app.core;
+package com.ilim.app.core.util;
 
 import org.springframework.stereotype.Component;
 

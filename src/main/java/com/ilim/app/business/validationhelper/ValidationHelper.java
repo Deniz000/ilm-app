@@ -10,7 +10,7 @@ import java.util.Map;
 public class ValidationHelper {
     private final Map<Class<?>, Validator<?>> validators = new HashMap<>();
 
-    public ValidationHelper(UserValidator userValidator,
+    public ValidationHelper(UserValidatorImpl userValidator,
                             ClassroomValidatorImpl classroomValidator,
                             CategoryValidator categoryValidator,
                             CalendarEventValidatorImpl calendarEventValidator,
@@ -35,6 +35,7 @@ public class ValidationHelper {
         }
         return validator.getIfExistsById(id);
     }
+
     @SuppressWarnings("unchecked")
     public <T> T getIfExistsByName(Class<T> type, String name) {
         Validator<T> validator = (Validator<T>) validators.get(type);
@@ -43,6 +44,7 @@ public class ValidationHelper {
         }
         return validator.getIfExistsByName(name);
     }
+
     @SuppressWarnings("unchecked")
     public boolean validateById(Class<?> type, Long id) {
         Validator<?> validator = validators.get(type);
@@ -51,6 +53,7 @@ public class ValidationHelper {
         }
         return ((Validator<Object>) validator).validateById(id);
     }
+
     @SuppressWarnings("unchecked")
     public boolean validateByName(Class<?> type, String name) {
         Validator<?> validator = validators.get(type);
@@ -69,13 +72,21 @@ public class ValidationHelper {
     public NoteValidator getNotesValidator() {
         return (NoteValidator) validators.get(Note.class);
     }
+
     public CalendarEventValidator getEventsValidator() {
         return (CalendarEventValidator) validators.get(CalendarEvent.class);
     }
+
     public LessonValidator getLessonsValidator() {
         return (LessonValidator) validators.get(Lesson.class);
     }
+
     public ClassroomValidator getClassroomValidator() {
         return (ClassroomValidator) validators.get(Classroom.class);
     }
+
+    public UserValidator getUserValidator() {
+        return (UserValidator) validators.get(UserEntity.class);
+    }
+
 }

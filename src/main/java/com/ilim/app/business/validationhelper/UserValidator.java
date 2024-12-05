@@ -1,34 +1,11 @@
 package com.ilim.app.business.validationhelper;
 
-import com.ilim.app.core.exceptions.UserNotFoundException;
-import com.ilim.app.dataAccess.UserRepository;
+import com.ilim.app.dto.classroom.StudentsResponse;
 import com.ilim.app.entities.UserEntity;
-import org.springframework.stereotype.Component;
 
-@Component
-public class UserValidator implements Validator<UserEntity> {
-    private final UserRepository userRepository;
+import java.util.List;
 
-    public UserValidator(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public boolean validateById(Long id)  {
-        return userRepository.existsById(id);
-    }
-
-    @Override
-    public boolean validateByName(String name){return false;}
-
-    @Override
-    public UserEntity getIfExistsById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id + " not found"));
-    }
-
-    @Override
-    public UserEntity getIfExistsByName(String name) {
-        return null;
-    }
+public interface UserValidator extends Validator<UserEntity> {
+    List<StudentsResponse> getAllStudents(Long classroomId);
+    boolean validateStudentIfEnrolled(Long classroomId, Long studentId);
 }
