@@ -12,4 +12,5 @@ public interface NoteService {
     void deleteNote(Long id);
     List<NoteResponse> getNotesByLesson(Long lessonId);
     List<NoteResponse> getNotesByUser(Long userId);
-    }
+    List<NoteResponse> getAll();
+}

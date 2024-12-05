@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface NoteValidator extends Validator<Note> {
     List<Note> getNotesByLessonId(Long lessonId);
+    List<Note> getNotesByUserId(Long lessonId);
 
 }

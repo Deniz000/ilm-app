@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NoteResponse {
-    private Long userId; // TODO redundant
-    private Long lessonId; // String al
+    private Long userId;
+    private Long lessonId;
+    private String title;
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

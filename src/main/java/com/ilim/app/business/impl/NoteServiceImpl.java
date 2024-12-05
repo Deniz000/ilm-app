@@ -1,19 +1,21 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.NoteService;
+import com.ilim.app.business.validationhelper.NoteValidator;
 import com.ilim.app.business.validationhelper.ValidationHelper;
-import com.ilim.app.core.Formatter;
+import com.ilim.app.core.exceptions.NoteNotFoundException;
+import com.ilim.app.core.util.EntityUpdateUtil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.NoteRepository;
 import com.ilim.app.dto.note.NoteRequest;
 import com.ilim.app.dto.note.NoteResponse;
+import com.ilim.app.entities.Lesson;
 import com.ilim.app.entities.Note;
+import com.ilim.app.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,15 +29,18 @@ public class NoteServiceImpl implements NoteService {
     private final ModelMapperService modelMapperService;
     private final ValidationHelper validationHelper;
 
-    private final String getDate = new Formatter().getFormattedCallTime(LocalDateTime.now());
+   // private final String getDate = new Formatter().getFormattedCallTime(LocalDateTime.now());
 
     @Override
     public NoteResponse createNote(NoteRequest request) {
         log.info("Creating note ");
         //saving same note is not a problem
-        Note note = modelMapperService.forRequest().map(request, Note.class);
-        note.setCreatedAt(getDate);
-        note.setUpdatedAt(getDate);
+        UserEntity creator = validationHelper.getIfExistsById(UserEntity.class, request.getCreatedBy());
+        Lesson lesson = validationHelper.getIfExistsById(Lesson.class, request.getLessonId());
+        Note note = new Note();
+        note.setCreatedBy(creator);
+        note.setLesson(lesson);
+        modelMapperService.forRequest().map(request, note);
         noteRepository.save(note);
         log.info("Created note");
         return modelMapperService.forResponse().map(note, NoteResponse.class);
@@ -52,8 +57,9 @@ public class NoteServiceImpl implements NoteService {
     public NoteResponse updateNote(Long id, NoteRequest request) {
         log.info("Updating note with ID: {}", id);
         Note note = validationHelper.getIfExistsById(Note.class, id);
-        note.setContent(request.getContent());
-        note.setUpdatedAt(getDate);
+        EntityUpdateUtil.updateIfNotNull(note::setTitle, request.getTitle());
+        EntityUpdateUtil.updateIfNotNull(note::setContent, request.getContent());
+        EntityUpdateUtil.updateIfNotNull(note::setUpdatedAt, request.getUpdatedAt());
         log.info("Note updated with ID: {}", id);
         return modelMapperService.forResponse().map(noteRepository.save(note), NoteResponse.class);
     }
@@ -61,15 +67,29 @@ public class NoteServiceImpl implements NoteService {
     @Override
     public List<NoteResponse> getNotesByUser(Long userId) {
         log.info("Fetching notes for user ID: {}", userId);
-        return noteRepository.findNoteByCreatedById(userId).stream()
+        NoteValidator noteValidator = validationHelper.getNotesValidator();
+        return noteValidator.getNotesByUserId(userId).stream()
                 .map(note -> modelMapperService.forResponse().map(note, NoteResponse.class))
                 .collect(Collectors.toList());
     }
 
     @Override
+    public List<NoteResponse> getAll() {
+        List<Note> notes = noteRepository.findAll();
+
+        if (notes.isEmpty()) {
+            throw new NoteNotFoundException("There is no any notes");
+        }
+        return notes.stream()
+                .map(note -> modelMapperService.forResponse()
+                        .map(note, NoteResponse.class)).collect(Collectors.toList());
+    }
+
+    @Override
     public List<NoteResponse> getNotesByLesson(Long lessonId) {
         log.info("Fetching notes for lesson ID: {}", lessonId);
-        return noteRepository.findNoteByLessonId(lessonId).stream()
+        NoteValidator noteValidator = validationHelper.getNotesValidator();
+        return noteValidator.getNotesByLessonId(lessonId).stream()
                 .map(note -> modelMapperService.forResponse().map(note, NoteResponse.class))
                 .collect(Collectors.toList());
     }

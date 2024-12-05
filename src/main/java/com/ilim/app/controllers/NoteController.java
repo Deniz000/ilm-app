@@ -17,38 +17,51 @@ public class NoteController {
 
     private final NoteService noteService;
 
+    //tested - 03
     @PostMapping
     public ResponseEntity<NoteResponse> createNote(@Valid @RequestBody NoteRequest request) {
         NoteResponse response = noteService.createNote(request);
         return ResponseEntity.ok(response);
     }
 
+    //tested-05
+    @GetMapping
+    public ResponseEntity<List<NoteResponse>> getAllNotes() {
+        List<NoteResponse> response = noteService.getAll();
+        return ResponseEntity.ok(response);
+    }
+
+    //tested-05
     @GetMapping("/{id}")
-    public ResponseEntity<NoteResponse> getNoteById(@Valid @PathVariable Long id) {
+    public ResponseEntity<NoteResponse> getNoteById(@PathVariable Long id) {
         NoteResponse response = noteService.getNoteById(id);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<NoteResponse> updateNote(@Valid @PathVariable Long id,@Valid @RequestBody NoteRequest request) {
-        NoteResponse response = noteService.updateNote(id, request);
+    //tested -05
+    @PutMapping
+    public ResponseEntity<NoteResponse> updateNote(@Valid @RequestBody NoteRequest request) {
+        NoteResponse response = noteService.updateNote(request.getId(), request);
         return ResponseEntity.ok(response);
     }
 
+    //tested-05
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<NoteResponse>> getNotesByUser(@Valid @PathVariable Long userId) {
+    public ResponseEntity<List<NoteResponse>> getNotesByUser(@PathVariable Long userId) {
         List<NoteResponse> responses = noteService.getNotesByUser(userId);
         return ResponseEntity.ok(responses);
     }
 
+    //tested-05
     @GetMapping("/lesson/{lessonId}")
-    public ResponseEntity<List<NoteResponse>> getNotesByLesson(@Valid @PathVariable Long lessonId) {
+    public ResponseEntity<List<NoteResponse>> getNotesByLesson(@PathVariable Long lessonId) {
         List<NoteResponse> responses = noteService.getNotesByLesson(lessonId);
         return ResponseEntity.ok(responses);
     }
 
+    //tested - 05
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNote(@Valid @PathVariable Long id) {
+    public ResponseEntity<Void> deleteNote(@PathVariable Long id) {
         noteService.deleteNote(id);
         return ResponseEntity.noContent().build();
     }

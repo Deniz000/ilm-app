@@ -42,4 +42,9 @@ public class NoteValidatorImpl implements NoteValidator {
         return repository.findNoteByLessonId(lessonId)
                 .orElseThrow(() -> new NoteNotFoundException("Notes not found belong to lesson " + lessonId));
     }
+    @Override
+    public List<Note> getNotesByUserId(Long lessonId) {
+        return repository.findNoteByCreatedById(lessonId)
+                .orElseThrow(() -> new NoteNotFoundException("Notes not found belong to lesson " + lessonId));
+    }
 }

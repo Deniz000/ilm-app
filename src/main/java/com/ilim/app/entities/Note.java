@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Data
 @Entity
@@ -17,9 +16,6 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = true)
-    private String title;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity createdBy;
@@ -28,12 +24,15 @@ public class Note {
     @JoinColumn(name = "lesson_id", referencedColumnName = "id", nullable = false)
     private Lesson lesson;
 
-    @Column(name = "content", nullable = false, length = 2000)
+    @Column(name = "title")
+    private String title;
+
+    @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "created_at", nullable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 }

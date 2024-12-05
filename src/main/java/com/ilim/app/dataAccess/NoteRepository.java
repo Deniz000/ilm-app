@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<List<Note>> findNoteByLessonId(Long lessonId);
-    List<Note> findNoteByCreatedById(Long id);
+    Optional<List<Note>> findNoteByCreatedById(Long id);
 
     boolean existsByTitle(String title);
 
