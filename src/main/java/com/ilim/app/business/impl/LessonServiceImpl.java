@@ -76,17 +76,12 @@ public class LessonServiceImpl implements LessonService {
     @Transactional
     public LessonResponse updateLesson(Long id, LessonUpdateRequest request) {
         log.info("Updating lesson with ID: {}", id);
-
-        // İlgili dersin varlığını doğrula ve yükle
         Lesson lesson = validationHelper.getIfExistsById(Lesson.class, id);
-
-        // Güncelleme yapılacak alanları kontrol et ve ata
         if (request.getCategoryId() != null) {
             Category category = validationHelper.getIfExistsById(Category.class, request.getCategoryId());
             lesson.setCategory(category);
             log.info("Category updated for lesson ID: {}", id);
         }
-
         if (request.getCallerId() != null) {
             UserEntity caller = validationHelper.getIfExistsById(UserEntity.class, request.getCallerId());
             lesson.setCaller(caller);
@@ -97,11 +92,9 @@ public class LessonServiceImpl implements LessonService {
         updateIfNotNull(lesson::setCallTime, request.getCallTime());
         updateIfNotNull(lesson::setCallLink, request.getCallLink());
 
-        // Değişiklikleri kaydet
         lessonRepository.save(lesson);
         log.info("Lesson updated successfully with ID: {}", id);
 
-        // Güncellenmiş dersi yanıt DTO'suna dönüştür
         return modelMapperService.forResponse().map(lesson, LessonResponse.class);
     }
 
