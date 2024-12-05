@@ -13,6 +13,7 @@ import com.ilim.app.dto.classroom.*;
 import com.ilim.app.entities.Classroom;
 import com.ilim.app.entities.Role;
 import com.ilim.app.entities.UserEntity;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import static com.ilim.app.core.util.EntityUpdateUtil.*;
 
 @Slf4j
 @Service
+@Transactional
 @AllArgsConstructor
 public class ClassroomServiceImpl implements ClassroomService {
 
