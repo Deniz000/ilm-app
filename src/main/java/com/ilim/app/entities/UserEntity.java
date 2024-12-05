@@ -1,5 +1,6 @@
 package com.ilim.app.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -54,6 +55,10 @@ public class UserEntity implements UserDetails {
 
     @OneToMany(mappedBy = "uploadedBy")
     private List<Material> materials;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
+    private CalendarEvent calendar;
 
     @Override
     public String getUsername() {

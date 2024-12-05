@@ -31,6 +31,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/classrooms/**").permitAll()
                         .requestMatchers("/api/materials/**").permitAll()
                         .requestMatchers("/api/notes/**").permitAll()
+                        .requestMatchers("/api/calendar-events/**").permitAll()
+                        .requestMatchers("/api/materials/**").permitAll()
                         .anyRequest().authenticated() // Geri kalan endpoint'ler için kimlik doğrulama iste
                 )
                 .sessionManagement(session -> session

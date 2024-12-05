@@ -89,4 +89,8 @@ public class ValidationHelper {
         return (UserValidator) validators.get(UserEntity.class);
     }
 
+    public AttendanceValidator getAttendanceValidator() {
+        return (AttendanceValidator) validators.get(UserEntity.class);
+    }
+
 }

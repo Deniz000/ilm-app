@@ -37,10 +37,21 @@ public class CalendarEventValidatorImpl implements CalendarEventValidator {
         return repository.findCalendarEventByTitle(name)
                 .orElseThrow(() -> new CategoryNotFoundException(name + " event not found"));
     }
+    @Override
+    public List<CalendarEvent> getCalendarEventsOfTeacher(Long teacherId) {
+        return repository.findCalendarEventByCreatorId(teacherId)
+                .orElseThrow(() -> new CalendarEventNotFoundException(teacherId + " has no any event"));
+    }
+    @Override
+    public List<CalendarEvent> getCalendarEventsOfStudent(Long id) {
+        return repository.findCalendarEventByParticipants_Id(id)
+                .orElseThrow(() -> new CalendarEventNotFoundException(id + " has no any event"));
+    }
 
     @Override
     public List<CalendarEvent> getCalendarEventsByLessonId(Long lessonId) {
-        return repository.findCalendarEventByLessonId(lessonId)
-                .orElseThrow(() -> new CalendarEventNotFoundException(lessonId + " has no any event"));
+        return repository.findCalendarEventByLesson_Id(lessonId)
+                .orElseThrow(() -> new CalendarEventNotFoundException("There is no any event belonging to this lesson" + lessonId));
     }
+
 }

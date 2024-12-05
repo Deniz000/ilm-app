@@ -2,7 +2,6 @@ package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.UserService;
 import com.ilim.app.business.validationhelper.ValidationHelper;
-import com.ilim.app.business.validationhelper.sil;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.dto.user.UserRequest;
@@ -20,15 +19,6 @@ public class UserServiceImp implements UserService {
     private final UserRepository userRepository;
     private final ModelMapperService modelMapper;
     private final ValidationHelper validationHelper;
-
-    private String takeRoleName(String roleName) {
-        return switch (roleName.toUpperCase()) {
-            case "ADMIN" -> "ADMIN";
-            case "TEACHER" -> "TEACHER";
-            case "STUDENT" -> "STUDENT";
-            default -> "not found";
-        };
-    }
 
     public UserWithRolesDTO getUserById(Long id) {
         UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);

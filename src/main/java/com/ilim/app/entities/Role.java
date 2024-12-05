@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+
 @Data
 @Entity
 @Table(name = "roles")
@@ -25,7 +23,13 @@ public class Role {
     public enum RoleName {
         ADMIN,
         TEACHER,
-        STUDENT
+        STUDENT;
+        public static RoleName fromString(String name) {
+            return Arrays.stream(values())
+                    .filter(n-> n.name().equalsIgnoreCase(name))
+                    .findFirst()
+                    .orElseThrow(()-> new IllegalArgumentException("Invalid role name: " + name));
+        }
     }
 }
 

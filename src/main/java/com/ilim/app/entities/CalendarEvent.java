@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @Data
 @Entity
@@ -40,9 +42,22 @@ public class CalendarEvent {
     @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false)
     private UserEntity creator;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "calendar")
+    private List<UserEntity> participants;
+
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Attendance> attendances;
+
     public enum EventType {
         LESSON,
         MEETING,
-        OTHER,
+        OTHER;
+
+        public static EventType fromString(String eventType) {
+            return Arrays.stream(values())
+                    .filter(type -> type.name().equalsIgnoreCase(eventType))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid type: " + eventType));
+        }
     }
 }

@@ -7,9 +7,18 @@ import com.ilim.app.dto.calendar.UpdateCalendarEventRequest;
 import java.util.List;
 
 public interface CalendarEventService {
-    List<CalendarEventResponse> getEventsByUser(Long userId);
-    List<CalendarEventResponse> getEventsByLesson(Long lessonId);
+
     CalendarEventResponse createCalendarEvent(CreateCalendarEventRequest request);
+
     CalendarEventResponse updateCalendarEvent(Long id, UpdateCalendarEventRequest request);
+
     void deleteCalendarEvent(Long id);
-    }
+
+    List<CalendarEventResponse> getAllEventsByStudent(Long userId);
+    List<CalendarEventResponse> getAllEventsByTeacher(Long userId);
+
+    List<CalendarEventResponse> getFilteredEvents(String day, String week, Boolean upcoming);
+
+    List<CalendarEventResponse> getEventsByLesson(Long lessonId);
+
+}
