@@ -37,7 +37,7 @@ public class AttendanceValidatorImpl implements AttendanceValidator {
 
     @Override
     public List<Attendance> getAttendancesByLesson(Long lessonId) {
-        return repository.findByLessonId(lessonId)
+        return repository.findAttendanceByLesson_Id(lessonId)
                 .orElseThrow(() -> new AttendanceNotFoundException("There is no any attendance with this lesson" + lessonId));
     }
 

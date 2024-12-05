@@ -10,6 +10,7 @@ import com.ilim.app.dto.attendance.CreateAttendanceRequest;
 import com.ilim.app.entities.Attendance;
 import com.ilim.app.entities.Attendance.AttendanceStatus;
 import com.ilim.app.entities.CalendarEvent;
+import com.ilim.app.entities.Lesson;
 import com.ilim.app.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void markAttendance(CreateAttendanceRequest request) {
         CalendarEvent event = validationHelper.getIfExistsById(CalendarEvent.class, request.getEventId());
         UserEntity user = validationHelper.getIfExistsById(UserEntity.class, request.getUserId());
-
+        Lesson lesson = validationHelper.getIfExistsById(Lesson.class, request.getLessonId());
         Optional<Attendance> existingAttendance =
                 attendanceRepository.findByUser_IdAndEvent_Id(user.getId(), event.getId());
         if (existingAttendance.isPresent()) {
@@ -42,6 +43,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             Attendance attendance = new Attendance();
             attendance.setEvent(event);
             attendance.setUser(user);
+            attendance.setLesson(lesson);
             attendance.setStatus(AttendanceStatus.fromString(request.getStatus()));
             attendance.setAttendanceDate(event.getStartTime());
             attendanceRepository.save(attendance);
@@ -68,6 +70,4 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .map(attendance -> modelMapperService.forResponse().map(attendance, AttendanceResponse.class))
                 .toList();
     }
-
-
 }

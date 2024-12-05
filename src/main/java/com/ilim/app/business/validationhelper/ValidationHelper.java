@@ -16,7 +16,8 @@ public class ValidationHelper {
                             CalendarEventValidatorImpl calendarEventValidator,
                             NoteValidatorImpl noteValidator,
                             LessonValidatorImpl lessonValidator,
-                            MaterialValidatorImpl materialValidator) {
+                            MaterialValidatorImpl materialValidator,
+                            AttendanceValidatorImpl attendanceValidator) {
 
         validators.put(UserEntity.class, userValidator);
         validators.put(Classroom.class, classroomValidator);
@@ -25,6 +26,7 @@ public class ValidationHelper {
         validators.put(Note.class, noteValidator);
         validators.put(Lesson.class, lessonValidator);
         validators.put(Material.class, materialValidator);
+        validators.put(Attendance.class, attendanceValidator);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,7 +92,7 @@ public class ValidationHelper {
     }
 
     public AttendanceValidator getAttendanceValidator() {
-        return (AttendanceValidator) validators.get(UserEntity.class);
+        return (AttendanceValidator) validators.get(Attendance.class);
     }
 
 }
