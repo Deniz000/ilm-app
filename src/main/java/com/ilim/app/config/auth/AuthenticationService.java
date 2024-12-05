@@ -57,19 +57,10 @@ public class AuthenticationService {
 
 
     private Role getRoles(String roleName){
-        Role.RoleName role = Role.RoleName.valueOf(takeRoleName(roleName));
+        Role.RoleName role = Role.RoleName.fromString(roleName);
 
         return roleRepository.findByName(role)
                 .orElseThrow(() -> new InvalidRoleException("Role not found"));
-    }
-
-    private String takeRoleName(String roleName) {
-        return switch (roleName.toUpperCase()) {
-            case "ADMIN" -> "ADMIN";
-            case "TEACHER" -> "TEACHER";
-            case "STUDENT" -> "STUDENT";
-            default -> "not found";
-        };
     }
 
 }

@@ -5,8 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Objects;
+import java.util.Arrays;
+
 @Data
 @Entity
 @Table(name = "attendances")
@@ -29,8 +29,12 @@ public class Attendance {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "date", nullable = false)
-    private String date;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", referencedColumnName = "id")
+    private CalendarEvent event;
+
+    @Column(name = "attendance_date", nullable = false)
+    private LocalDateTime attendanceDate;
 
     public enum AttendanceStatus {
         ATTENDED,
@@ -38,7 +42,14 @@ public class Attendance {
         EXCUSED,
         WILL_ATTEND,
         NOT_WILL_ATTEND,
-        LATE
+        LATE;
+
+        public static AttendanceStatus fromString(String status) {
+            return Arrays.stream(values())
+                    .filter(s -> s.name().equalsIgnoreCase(status))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid status: " + status));
+        }
     }
 
 }

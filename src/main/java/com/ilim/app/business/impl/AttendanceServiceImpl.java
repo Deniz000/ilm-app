@@ -1,21 +1,24 @@
 package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.AttendanceService;
-import com.ilim.app.business.validationhelper.AttendanceValidationHelper;
-import com.ilim.app.core.Formatter;
+import com.ilim.app.business.validationhelper.AttendanceValidator;
+import com.ilim.app.business.validationhelper.ValidationHelper;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.AttendanceRepository;
 import com.ilim.app.dto.attendance.AttendanceResponse;
 import com.ilim.app.dto.attendance.CreateAttendanceRequest;
-import com.ilim.app.dto.attendance.UpdateAttendanceRequest;
 import com.ilim.app.entities.Attendance;
+import com.ilim.app.entities.Attendance.AttendanceStatus;
+import com.ilim.app.entities.CalendarEvent;
+import com.ilim.app.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
 
 @Slf4j
 @Service
@@ -24,96 +27,56 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     private final AttendanceRepository attendanceRepository;
     private final ModelMapperService modelMapperService;
-    private final AttendanceValidationHelper validate;
-
-
-    @Override
-    @Transactional
-    public void createAttendance(CreateAttendanceRequest request) {
-        validate.validateAttendanceRequest(request);
-        log.info("Creating new Attendance: {}", request.getUserId());
-        Attendance attendance = this.modelMapperService.forRequest().map(request, Attendance.class);
-        attendance.setDate(new Formatter().getFormattedCallTime(LocalDateTime.now()));
-        log.info("Attendance created: {}", attendance.getUser().getUsername());
-        attendanceRepository.save(attendance);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public AttendanceResponse getAttendanceById(Long id) {
-        log.info("Fetching Attendance with ID: {}", id);
-        Attendance attendance = validate.getAttendanceIfExist(id);
-        return this.modelMapperService.forResponse()
-                .map(attendance, AttendanceResponse.class);
-        // Kullanıcının yalnızca kendi katılımını görmesi için kontrol
-        //  checkUserAuthorization(attendance);
-    }
+    private final ValidationHelper validationHelper;
 
     @Override
     @Transactional
-    public AttendanceResponse updateAttendance(Long id, UpdateAttendanceRequest request) {
-        Attendance attendance = validate.getAttendanceIfExist(id);
-        log.info("Updating Attendance with ID: {}", id);
+    public void markAttendance(CreateAttendanceRequest request) {
+        CalendarEvent event = validationHelper.getIfExistsById(CalendarEvent.class, request.getEventId());
+        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, request.getUserId());
 
-        if (request.getStatus() != null) {
-            try {
-                attendance.setStatus(updateStatus(request.getStatus()));
-            } catch (IllegalArgumentException e) {
-                log.error("Invalid status value: {}", request.getStatus(), e);
-                throw new IllegalArgumentException("Invalid status value provided.");
-            }
-        }
-        attendanceRepository.save(attendance);
-        log.info("Updated Attendance with ID: {}", id);
-        return this.modelMapperService.forResponse().map(attendance, AttendanceResponse.class);
-    }
+        Optional<Attendance> existingAttendance =
+                attendanceRepository.findByUser_IdAndEvent_Id(user.getId(), event.getId());
+        if (existingAttendance.isPresent()) {
+            existingAttendance.get().setStatus(AttendanceStatus.fromString(request.getStatus()));
+        } else {
+            Attendance attendance = new Attendance();
+            attendance.setEvent(event);
+            attendance.setUser(user);
+            attendance.setStatus(AttendanceStatus.fromString(request.getStatus()));
+            attendance.setAttendanceDate(event.getStartTime());
+            attendanceRepository.save(attendance);
+        }}
+
 
     @Override
-    @Transactional(readOnly = true)
+    public void deleteAttendance(Long id) {
+        log.info("Delete attendance: {}", id);
+        Attendance attendance = validationHelper.getIfExistsById(Attendance.class, id);
+        attendanceRepository.delete(attendance);
+    }
+    @Override
     public List<AttendanceResponse> getAttendancesByLesson(Long lessonId) {
-        log.info("Fetching Attendances for Lesson ID: {}", lessonId);
-        return attendanceRepository.findByLessonId(lessonId).stream()
-                .map(attendance -> this.modelMapperService.forResponse()
-                        .map(attendance, AttendanceResponse.class))
-                .toList();
+        return getAttendances(validator -> validator.getAttendancesByLesson(lessonId));
     }
 
     @Override
     public List<AttendanceResponse> getAttendancesByUser(Long userId) {
-        // Sadece kendi verilerini görmek isteyen kullanıcı için yetkilendirme kontrolü
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        UserEntity currentUser = (UserEntity) auth.getPrincipal();
-//        if (!currentUser.getId().equals(userId) && !currentUser.getRole().equals(UserEntity.Role.ADMIN)) {
-//            throw new SecurityException("Unauthorized access to other user's attendance records.");
-//        }
-        log.info("Fetching Attendances for User ID: {}", userId);
-        return attendanceRepository.findByUserId(userId).stream()
-                .map(attendance -> this.modelMapperService.forResponse()
-                        .map(attendance, AttendanceResponse.class))
+        return getAttendances(validator -> validator.getAttendancesByUser(userId));
+    }
+
+    @Override
+    public List<AttendanceResponse> getAttendanceByEvent(Long eventId) {
+        return getAttendances(validator -> validator.getAttendanceByEvent(eventId));
+    }
+
+    private List<AttendanceResponse> getAttendances(Function<AttendanceValidator, List<Attendance>> fetchFunction) {
+        AttendanceValidator attendanceValidator = validationHelper.getAttendanceValidator();
+        List<Attendance> attendances = fetchFunction.apply(attendanceValidator); // Dinamik çağrı
+        return attendances.stream()
+                .map(attendance -> modelMapperService.forResponse().map(attendance, AttendanceResponse.class))
                 .toList();
     }
 
 
-
-    @Override
-    @Transactional
-    public void deleteAttendance(Long id) {
-        log.info("Deleting Attendance with ID: {}", id);
-        Attendance attendance = validate.getAttendanceIfExist(id);
-        attendanceRepository.delete(attendance);
-        log.info("Notification with ID: {} deleted.", id);
-    }
-
-//    private void checkUserAuthorization(Attendance attendance) {
-//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//        UserEntity currentUser = (UserEntity) auth.getPrincipal();
-//        if (!attendance.getUser().getId().equals(currentUser.getId()) && !currentUser.getRole().equals(UserEntity.Role.ADMIN)) {
-//            throw new SecurityException("Unauthorized access to attendance.");
-//        }
-//    }
-
-
-    private Attendance.AttendanceStatus updateStatus(String status) {
-        return Attendance.AttendanceStatus.valueOf(status);
-    }
 }
