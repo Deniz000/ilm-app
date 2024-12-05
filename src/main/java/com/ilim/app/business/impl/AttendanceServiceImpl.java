@@ -54,6 +54,8 @@ public class AttendanceServiceImpl implements AttendanceService {
         attendanceRepository.delete(attendance);
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<AttendanceResponse> getAttendances(String type, Long id) {
         AttendanceValidator attendanceValidator = validationHelper.getAttendanceValidator();
         List<Attendance> attendances = switch (type.toUpperCase()) {
