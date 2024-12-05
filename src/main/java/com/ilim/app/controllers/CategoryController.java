@@ -51,6 +51,7 @@ public class CategoryController {
         return ResponseEntity.noContent().build();
     }
 
+    //tested - 03
     @GetMapping("/{categoryId}/lessons")
     public ResponseEntity<List<LessonResponse>> getLessonsByCategoryId(@PathVariable Long categoryId) {
         List<LessonResponse> lessons = categoryService.getLessonsByCategoryId(categoryId);

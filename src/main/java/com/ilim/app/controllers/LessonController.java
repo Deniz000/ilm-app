@@ -53,21 +53,21 @@ public class LessonController {
         return ResponseEntity.noContent().build();
     }
 
-    // Dersin materyalleri
+    // Dersin materyalleri - tested - 03
     @GetMapping("/{lessonId}/materials")
     public ResponseEntity<List<MaterialResponse>> getMaterialsByLessonId(@PathVariable Long lessonId) {
         List<MaterialResponse> materials = lessonService.getMaterialsByLessonId(lessonId);
         return ResponseEntity.ok(materials);
     }
 
-    // Dersin notları
+    // Dersin notları - tested - 03
     @GetMapping("/{lessonId}/notes")
     public ResponseEntity<List<NoteResponse>> getNotesByLessonId(@PathVariable Long lessonId) {
         List<NoteResponse> notes = lessonService.getNotesByLessonId(lessonId);
         return ResponseEntity.ok(notes);
     }
 
-    // Dersin takvimi
+    // Dersin takvimi - tested -03
     @GetMapping("/{lessonId}/calendar")
     public ResponseEntity<List<CalendarEventResponse>> getCalendarByLessonId(@PathVariable Long lessonId) {
         List<CalendarEventResponse> calendar = lessonService.getCalendarByLessonId(lessonId);
