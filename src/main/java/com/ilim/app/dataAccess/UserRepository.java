@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsById(@NotNull Long id);
+    boolean existsByEmail(@NotNull String email);
 
 
     @Query(value = "SELECT COUNT(u.id) > 0 FROM users u " +

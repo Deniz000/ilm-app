@@ -56,9 +56,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "uploadedBy")
     private List<Material> materials;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
-    private CalendarEvent calendar;
+    private List<CalendarEvent> calendars;
 
     @Override
     public String getUsername() {

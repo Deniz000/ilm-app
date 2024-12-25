@@ -1,4 +1,4 @@
-package com.ilim.app.config;
+package com.ilim.app.config.jwtauth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

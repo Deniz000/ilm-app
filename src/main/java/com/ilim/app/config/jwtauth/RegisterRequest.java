@@ -1,4 +1,4 @@
-package com.ilim.app.config.auth;
+package com.ilim.app.config.jwtauth;
 
 import com.ilim.app.business.validation.PasswordMatches;
 import com.ilim.app.business.validation.ValidEmail;

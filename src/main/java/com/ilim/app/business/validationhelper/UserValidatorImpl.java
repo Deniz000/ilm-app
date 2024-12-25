@@ -34,9 +34,14 @@ public class UserValidatorImpl implements UserValidator {
     }
 
     @Override
+    public boolean validateByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
     public UserEntity getIfExistsById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id + " not found"));
+                .orElseThrow(() -> new UserNotFoundException(id + " not found -user"));
     }
 
     @Override

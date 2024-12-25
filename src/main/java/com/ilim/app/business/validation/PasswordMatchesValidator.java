@@ -1,6 +1,6 @@
 package com.ilim.app.business.validation;
 
-import com.ilim.app.config.auth.RegisterRequest;
+import com.ilim.app.config.jwtauth.RegisterRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

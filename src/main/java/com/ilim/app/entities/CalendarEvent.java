@@ -42,7 +42,7 @@ public class CalendarEvent {
     @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false)
     private UserEntity creator;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "calendar")
+    @ManyToMany(fetch = FetchType.LAZY)
     private List<UserEntity> participants;
 
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

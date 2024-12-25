@@ -26,7 +26,7 @@ public class CreateCalendarEventRequest {
 
     @NotNull(message = "Event type cannot be null")
     @Pattern(regexp = "LESSON|MEETING|OTHER", message = "Event type must be 'LESSON', 'MEETING', or 'OTHER'")
-    private String eventType; // Expecting "LESSON", "MEETING", or "OTHER"
+    private String eventType;
 
     @NotNull(message = "Lesson ID cannot be null")
     @Min(value = 1, message = "Lesson ID must be greater than 0")

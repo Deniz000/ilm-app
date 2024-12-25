@@ -1,4 +1,4 @@
-package com.ilim.app.config;
+package com.ilim.app.config.jwtauth;
 
 import com.ilim.app.dataAccess.UserRepository;
 import lombok.RequiredArgsConstructor;

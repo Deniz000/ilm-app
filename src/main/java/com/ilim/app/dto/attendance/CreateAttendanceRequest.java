@@ -7,4 +7,5 @@ public class CreateAttendanceRequest {
     private Long userId;
     private String status;
     private Long eventId;
+    private Long lessonId;
 }

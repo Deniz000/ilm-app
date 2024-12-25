@@ -11,8 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MaterialRequest {
 
+    private Long id;
+
     @NotNull(message = "Please, choose the lesson first")
     private Long lessonId;
+
+    @NotNull(message = "Who is uploading this doc? ")
+    private Long userId;
 
     @NotNull(message = "Material title shouldn't be empty")
     @Size(min = 3, message = "enter at least 3 letters")

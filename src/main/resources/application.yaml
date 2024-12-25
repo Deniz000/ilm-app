@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: demo
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/ilm_app?useSSL=false&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 12345Gulo
+
+  main:
+    allow-bean-definition-overriding: true
+
+jwt:
+  secret: XQzVcDZs7KtEQ9ZPjAeTRWnPSNmX/mQpg7WvB5uYOjQ=
+
+logging:
+  level:
+    org.springframework.security: trace
+    org:
+      springframework:
+        security=DEBUG:
+
+server:
+  port: 8080
+

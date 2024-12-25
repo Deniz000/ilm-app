@@ -10,7 +10,6 @@ public interface NoteService {
     NoteResponse getNoteById(Long id);
     NoteResponse updateNote(Long id, NoteRequest request);
     void deleteNote(Long id);
-    List<NoteResponse> getNotesByLesson(Long lessonId);
     List<NoteResponse> getNotesByUser(Long userId);
     List<NoteResponse> getAll();
 }

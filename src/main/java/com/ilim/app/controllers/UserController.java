@@ -10,9 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Set;
-
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -38,9 +35,10 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
-    @PutMapping
-    public ResponseEntity<UserWithRolesDTO> updateUser(@Valid @PathVariable Long id,
-                                                       @Valid @RequestBody UserRequest request) {
+    @PutMapping("/{id}")
+    public ResponseEntity<UserWithRolesDTO> updateUser(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody UserRequest request) {
         UserWithRolesDTO user = userServiceImp.updateUser(id, request);
         return ResponseEntity.ok(user);
     }

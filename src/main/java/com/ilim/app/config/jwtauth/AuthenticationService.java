@@ -1,6 +1,5 @@
-package com.ilim.app.config.auth;
+package com.ilim.app.config.jwtauth;
 
-import com.ilim.app.config.JwtService;
 import com.ilim.app.core.exceptions.InvalidRoleException;
 import com.ilim.app.dataAccess.RoleRepository;
 import com.ilim.app.dataAccess.UserRepository;
@@ -14,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Builder
@@ -52,6 +52,7 @@ public class AuthenticationService {
         var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
+                .role(user.getRoles().stream().map(role -> role.getName().toString()).collect(Collectors.toList()))
                 .build();
     }
 

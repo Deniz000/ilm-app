@@ -2,6 +2,7 @@ package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.UserService;
 import com.ilim.app.business.validationhelper.ValidationHelper;
+import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.UserRepository;
 import com.ilim.app.dto.user.UserRequest;
@@ -10,6 +11,8 @@ import com.ilim.app.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import static com.ilim.app.core.util.EntityUpdateUtil.*;
 
 @Slf4j
 @Service
@@ -24,13 +27,37 @@ public class UserServiceImp implements UserService {
         UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
     }
-
     @Override
     public UserWithRolesDTO updateUser(Long id, UserRequest request) {
-        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
-        modelMapper.forRequest().map(request, user);
-        return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
+        int attempts = 0;
+        final int maxAttempts = 5;
+        while (attempts < maxAttempts) {
+            try {
+                UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
+                boolean isThere = validationHelper.getUserValidator().validateByEmail(request.getEmail());
+                if (isThere)
+                    throw new EntityAlreadyExits("Change The Email");
+
+                updateIfNotNull(user::setUsername, request.getUsername());
+                updateIfNotNull(user::setEmail, request.getEmail());
+                updateIfNotNull(user::setPassword, request.getPassword());
+                modelMapper.forRequest().map(request, user);
+                return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
+            } catch (EntityAlreadyExits ex) {
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    throw new RuntimeException("Max retry attempts reached. Unable to update user.", ex);
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
+        throw new RuntimeException("Unexpected error occurred.");
     }
+
 
     @Override
     public void deleteUser(Long id) {
@@ -59,11 +86,6 @@ public class UserServiceImp implements UserService {
 //        return dtos;
 //    }
 //
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        return this.userRepository.findByEmail(username)
-//                .orElseThrow(()-> new UserNotFoundException("User not found with username: " + username));
-//    }
 }
 
 

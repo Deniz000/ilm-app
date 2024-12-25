@@ -1,4 +1,4 @@
-package com.ilim.app.config;
+package com.ilim.app.config.jwtauth;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

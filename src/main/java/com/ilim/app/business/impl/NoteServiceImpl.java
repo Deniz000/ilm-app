@@ -87,15 +87,6 @@ public class NoteServiceImpl implements NoteService {
     }
 
     @Override
-    public List<NoteResponse> getNotesByLesson(Long lessonId) {
-        log.info("Fetching notes for lesson ID: {}", lessonId);
-        NoteValidator noteValidator = validationHelper.getNotesValidator();
-        return noteValidator.getNotesByLessonId(lessonId).stream()
-                .map(note -> modelMapperService.forResponse().map(note, NoteResponse.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public void deleteNote(Long id) {
         log.info("Deleting note with ID: {}", id);
         Note note = validationHelper.getIfExistsById(Note.class, id);

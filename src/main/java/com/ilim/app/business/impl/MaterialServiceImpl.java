@@ -9,13 +9,13 @@ import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.dataAccess.MaterialRepository;
 import com.ilim.app.entities.Lesson;
 import com.ilim.app.entities.Material;
+import com.ilim.app.entities.UserEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import static com.ilim.app.core.util.EntityUpdateUtil.updateIfNotNull;
 
 @Slf4j
 @Service
@@ -33,7 +33,11 @@ public class MaterialServiceImpl implements MaterialService {
         if (validationHelper.validateByName(Material.class, request.getTitle()) ) {
             throw new EntityAlreadyExits("Material already exists" + request.getTitle());
         }
+        Lesson lesson = validationHelper.getIfExistsById(Lesson.class, request.getLessonId());
+        UserEntity user = validationHelper.getIfExistsById(UserEntity.class, request.getUserId());
         Material material = modelMapper.forRequest().map(request, Material.class);
+        material.setLesson(lesson);
+        material.setUploadedBy(user);
         materialRepository.save(material);
         log.info("Material {} added", material.getTitle());
         return modelMapper.forResponse().map(material, MaterialResponse.class);
@@ -48,14 +52,14 @@ public class MaterialServiceImpl implements MaterialService {
 
     @Override
     @Transactional
-    public MaterialResponse updateMaterial(Long id, MaterialRequest request) {
-        log.info("Updating material with ID: {}", id);
-        Material material = validationHelper.getIfExistsById(Material.class, id);
-        material.setTitle(request.getTitle());
-        material.setFileUrl(request.getFileUrl());
-        material.setLesson(validationHelper.getIfExistsById(Lesson.class, request.getLessonId()));
+    public MaterialResponse updateMaterial(MaterialRequest request) {
+        log.info("Updating material with ID: {}", request.getId());
+        Material material = validationHelper.getIfExistsById(Material.class, request.getId());
+        updateIfNotNull(material::setTitle, request.getTitle());
+        updateIfNotNull(material::setFileUrl, request.getFileUrl());
+        updateIfNotNull(material::setLesson,validationHelper.getIfExistsById(Lesson.class, request.getLessonId()));
         materialRepository.save(material);
-        log.info("Material updated with ID: {}", id);
+        log.info("Material updated with ID: {}", request.getId());
         return modelMapper.forResponse().map(material, MaterialResponse.class);
     }
 
@@ -66,15 +70,6 @@ public class MaterialServiceImpl implements MaterialService {
         Material material = validationHelper.getIfExistsById(Material.class, id);
         materialRepository.deleteById(material.getId());
         log.info("Notification with ID: {} deleted.", id);
-    }
-
-    @Override
-    public List<MaterialResponse> getMaterialsByLessonId(Long lessonId) {
-        log.info("Fetching materials for Lesson with ID: {}", lessonId);
-        return materialRepository.findMaterialByLessonId(lessonId)
-                .stream()
-                .map(material -> modelMapper.forResponse().map(material, MaterialResponse.class))
-                .collect(Collectors.toList());
     }
 
 }

@@ -48,9 +48,10 @@ public class CalendarEventServiceImpl implements CalendarEventService {
         UserEntity creator = validationHelper.getIfExistsById(UserEntity.class, request.getCreatorId());
 
         CalendarEvent event = new CalendarEvent();
-        modelMapperService.forRequest().map(request, CalendarEvent.class);
+        modelMapperService.forRequest().map(request, event);
         event.setLesson(lesson);
         event.setCreator(creator);
+        event.setEventType(EventType.fromString(request.getEventType()));
         calendarEventRepository.save(event);
         log.info("Calendar event created with ID: {}", event.getId());
         return modelMapperService.forResponse().map(event, CalendarEventResponse.class);
@@ -112,17 +113,5 @@ public class CalendarEventServiceImpl implements CalendarEventService {
                 .toList();
     }
 
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CalendarEventResponse> getEventsByLesson(Long lessonId) {
-        log.info("Fetching events for lesson ID: {}", lessonId);
-        CalendarEventValidator calendarEventValidator = validationHelper.getEventsValidator();
-        List<CalendarEvent> events = calendarEventValidator.getCalendarEventsByLessonId(lessonId);
-        return events.stream().map(
-                event -> modelMapperService.forResponse()
-                        .map(event, CalendarEventResponse.class)
-        ).toList();
-    }
 
 }

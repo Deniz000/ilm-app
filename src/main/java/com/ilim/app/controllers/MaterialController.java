@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/materials")
@@ -17,29 +16,28 @@ public class MaterialController {
 
     private final MaterialService materialService;
 
+    //tested - 05
     @PostMapping
     public ResponseEntity<MaterialResponse> addMaterial(@Valid @RequestBody MaterialRequest request) {
         return ResponseEntity.ok(materialService.addMaterial(request));
     }
 
+    //tested - 05
     @GetMapping("/{id}")
-    public ResponseEntity<MaterialResponse> getMaterialById(@Valid @PathVariable Long id) {
+    public ResponseEntity<MaterialResponse> getMaterialById(@PathVariable Long id) {
         return ResponseEntity.ok(materialService.getMaterialById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<MaterialResponse> updateMaterial(@Valid @PathVariable Long id,@Valid @RequestBody MaterialRequest request) {
-        return ResponseEntity.ok(materialService.updateMaterial(id, request));
+    //tested - 05
+    @PutMapping
+    public ResponseEntity<MaterialResponse> updateMaterial(@Valid @RequestBody MaterialRequest request) {
+        return ResponseEntity.ok(materialService.updateMaterial(request));
     }
 
+    //tested -05
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMaterial(@Valid @PathVariable Long id) {
         materialService.deleteMaterial(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/lesson/{lessonId}")
-    public ResponseEntity<List<MaterialResponse>> getMaterialsByLessonId(@Valid @PathVariable Long lessonId) {
-        return ResponseEntity.ok(materialService.getMaterialsByLessonId(lessonId));
     }
 }

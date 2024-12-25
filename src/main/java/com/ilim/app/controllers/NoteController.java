@@ -46,19 +46,11 @@ public class NoteController {
     }
 
     //tested-05
-    @GetMapping("/user/{userId}")
+    @GetMapping("/{userId}/notes")
     public ResponseEntity<List<NoteResponse>> getNotesByUser(@PathVariable Long userId) {
         List<NoteResponse> responses = noteService.getNotesByUser(userId);
         return ResponseEntity.ok(responses);
     }
-
-    //tested-05
-    @GetMapping("/lesson/{lessonId}")
-    public ResponseEntity<List<NoteResponse>> getNotesByLesson(@PathVariable Long lessonId) {
-        List<NoteResponse> responses = noteService.getNotesByLesson(lessonId);
-        return ResponseEntity.ok(responses);
-    }
-
     //tested - 05
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteNote(@PathVariable Long id) {

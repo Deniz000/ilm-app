@@ -19,6 +19,5 @@ public interface CalendarEventService {
 
     List<CalendarEventResponse> getFilteredEvents(String day, String week, Boolean upcoming);
 
-    List<CalendarEventResponse> getEventsByLesson(Long lessonId);
 
 }
