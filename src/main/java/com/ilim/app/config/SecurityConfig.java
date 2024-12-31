@@ -24,7 +24,8 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/register").permitAll()// Belirli endpoint'lere izin ver
+                        .requestMatchers("/api/auth/**").permitAll()// Belirli endpoint'lere izin ver
+                        .requestMatchers("/api/users/update").permitAll()
                         .requestMatchers("/**").permitAll()// Belirli endpoint'lere izin ver
                         .requestMatchers( "/favicon.ico").permitAll()
                         .anyRequest().authenticated() // Geri kalan endpoint'ler için kimlik doğrulama iste
@@ -35,7 +36,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider) // Kimlik doğrulama sağlayıcısını ekle
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class) // JWT filtreleme mekanizmasını ekle
                 .csrf(csrf -> {
-            csrf.ignoringRequestMatchers("/api/auth/**");
+            csrf.ignoringRequestMatchers("/**");
         });
         return http.build();
     }

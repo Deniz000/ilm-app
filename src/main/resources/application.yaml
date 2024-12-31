@@ -1,6 +1,7 @@
 spring:
   application:
     name: demo
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -21,6 +22,7 @@ spring:
 
 jwt:
   secret: XQzVcDZs7KtEQ9ZPjAeTRWnPSNmX/mQpg7WvB5uYOjQ=
+
 
 logging:
   level:

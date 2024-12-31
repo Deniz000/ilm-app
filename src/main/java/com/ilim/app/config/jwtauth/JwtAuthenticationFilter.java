@@ -1,10 +1,12 @@
 package com.ilim.app.config.jwtauth;
 
+import com.ilim.app.business.impl.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,43 +17,66 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, // gelen isteğimiz
-                                    @NonNull HttpServletResponse response, // gidecek istepimiz
-                                    @NonNull FilterChain filterChain // filtremizi, filtre kuyruğuna ekelyip bunu da kkullan diyoruz
-                                    //responsibility design pattern
-                                    //doFilter chaindeki bir sonraki filter'ı çağırır
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+
         final String authorizationHeader = request.getHeader("Authorization");
-        //jwt request'te 'Authorization header' içinde geliyor.
-        //Authorization: Bearer <token>
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        final String jwtToken = authorizationHeader.substring(7); // Bearer 7 karakter
-        final String userEmail = jwtService.extractUsername(jwtToken);
-        if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+        String token = authorizationHeader.substring(7);
+        if (isOnBlackList(response, token)) return;
+
+        final String userEmail = jwtService.extractEmail(token);
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
-            if(jwtService.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null, //oluşturacağımız sırada null
-                        userDetails.getAuthorities()
-                );
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+            if (jwtService.validateToken(token, userDetails)) {
+                setAuthentication(request, userDetails);
+            } else {
+                if (jwtService.isTokenExpired(token)) {
+                    log.warn("Token süresi dolmuş: {}", token);
+
+                    // Süresi dolmuş token için yeni bir token oluştur
+                    // Yeni tokenı response'a ekleyin
+
+                    setAuthentication(request, userDetails);
+                }
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void setAuthentication(HttpServletRequest request, UserDetails userDetails) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+        authentication.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    private boolean isOnBlackList(HttpServletResponse response, String token) throws IOException {
+        if (tokenBlacklistService.isTokenBlacklisted(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token kara listede.");
+            return true;
+        }
+        return false;
     }
 }

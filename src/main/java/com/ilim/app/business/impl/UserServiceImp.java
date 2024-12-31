@@ -2,10 +2,11 @@ package com.ilim.app.business.impl;
 
 import com.ilim.app.business.services.UserService;
 import com.ilim.app.business.validationhelper.ValidationHelper;
+import com.ilim.app.config.jwtauth.JwtService;
 import com.ilim.app.core.exceptions.EntityAlreadyExits;
 import com.ilim.app.core.util.mapper.ModelMapperService;
 import com.ilim.app.dataAccess.UserRepository;
-import com.ilim.app.dto.user.UserRequest;
+import com.ilim.app.dto.user.UserUpdateRequest;
 import com.ilim.app.dto.user.UserWithRolesDTO;
 import com.ilim.app.entities.UserEntity;
 import lombok.RequiredArgsConstructor;
@@ -22,13 +23,14 @@ public class UserServiceImp implements UserService {
     private final UserRepository userRepository;
     private final ModelMapperService modelMapper;
     private final ValidationHelper validationHelper;
+    private final JwtService jwtService;
 
     public UserWithRolesDTO getUserById(Long id) {
         UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
     }
     @Override
-    public UserWithRolesDTO updateUser(Long id, UserRequest request) {
+    public UserWithRolesDTO updateUser(Long id, UserUpdateRequest request) {
         int attempts = 0;
         final int maxAttempts = 5;
         while (attempts < maxAttempts) {
@@ -42,6 +44,7 @@ public class UserServiceImp implements UserService {
                 updateIfNotNull(user::setEmail, request.getEmail());
                 updateIfNotNull(user::setPassword, request.getPassword());
                 modelMapper.forRequest().map(request, user);
+
                 return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
             } catch (EntityAlreadyExits ex) {
                 attempts++;
