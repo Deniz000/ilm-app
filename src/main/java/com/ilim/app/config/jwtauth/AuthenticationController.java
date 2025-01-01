@@ -1,14 +1,13 @@
 package com.ilim.app.config.jwtauth;
 
-import com.ilim.app.business.impl.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.Map;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -29,13 +28,16 @@ public class AuthenticationController {
         return ResponseEntity.ok(service.authenticate(request));
     }
 
+
     @PostMapping("/refresh-token")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody String oldToken) {
-        String newToken = service.refreshToken(oldToken);
-        return ResponseEntity.ok(Collections.singletonMap("newToken", newToken));
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        service.refreshToken(request, response);
     }
 
-        @PostMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authHeader) {
         String token = authHeader.replace("Bearer ", "");
         service.logout(token);

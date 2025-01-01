@@ -1,5 +1,6 @@
 package com.ilim.app.config.jwtauth;
 
+import com.ilim.app.entities.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,15 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.expiration:360000}") // Varsayılan olarak 24 saat (ms cinsinden)
-    private long jwtExpirationMs;//    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:360000}") // Varsayılan 24 saat
+    private long jwtExpirationMs;
+
+    @Value("${jwt.refresh-token.expiration:604800000}") // Varsayılan 7 gün
+    private long jwtRefreshExpirationMs;
+
 //    private long jwtExpirationMs;
     @Value("${jwt.secret}") // will find better solution
     private String secretKey;
-    private final Clock clock = Clock.systemUTC();
 
     public String extractEmail(String token) {
         log.error("extractEmail");
@@ -58,20 +62,38 @@ public class JwtService {
 //                SignatureAlgorithm.HS256.getJcaName());
 //    }
 
-    public String generateToken(UserDetails userDetails, Long userId) {
-        Instant now = Instant.now(clock); // Şu anki zaman (UTC)
-        Instant expiration = now.plusMillis(jwtExpirationMs); // Belirtilen süre ekleniyor
+    public String generateToken(
+            UserDetails userDetails,
+                                Long userId,
+            String name
+
+                                ) {
+        return buildToken(userDetails, userId,name, jwtExpirationMs);
+    }
+
+
+    public String generateRefreshToken(
+            UserDetails userDetails,
+            Long id,
+            String name
+    ) {
+        return buildToken(userDetails, id, name, jwtRefreshExpirationMs);
+    }
+    private String buildToken(UserDetails userDetails,
+                              Long userId,
+                              String name,
+                              Long expiration) {
 
         return Jwts.builder()
                 .subject(userDetails.getUsername())
-                .claim("userId", userId) // Kullanıcı ID'sini ekliyoruz
+                .claim("userId", userId)
+                .claim("name", name)
                 .claim("role", userDetails.getAuthorities()) // Role bilgisini ekliyoruz
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expiration))
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSignInKey())
                 .compact();
     }
-
 
     public boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractEmail(token);
@@ -94,4 +116,5 @@ public class JwtService {
         }
         return roles.contains(roleName);
     }
+
 }

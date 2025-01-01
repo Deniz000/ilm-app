@@ -11,6 +11,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserWithRolesDTO {
     private String email;
-    private String username;
+    private String userName;
     private String password;
 }

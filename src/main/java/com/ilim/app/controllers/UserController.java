@@ -46,13 +46,7 @@ public class UserController {
             @RequestBody UserUpdateRequest request
             ) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException("Unauthorized: Token is missing or invalid.");
-        }
        UserWithRolesDTO user = userService.updateUser(request.getId(), request);
-
         return ResponseEntity.ok(user);
     }
 //    @GetMapping

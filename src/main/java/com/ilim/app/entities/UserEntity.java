@@ -64,7 +64,7 @@ public class UserEntity implements UserDetails {
     public String getUsername() {
         return email;
     }
-
+    public String getName(){return username;}
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream().map(role ->

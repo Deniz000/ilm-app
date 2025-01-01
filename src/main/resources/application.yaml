@@ -20,16 +20,18 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+
 jwt:
   secret: XQzVcDZs7KtEQ9ZPjAeTRWnPSNmX/mQpg7WvB5uYOjQ=
+  expiration: 86400000 # Access token: 1 gün (milisaniye cinsinden)
+  refresh-token:
+    expiration: 604800000 # Refresh token: 7 gün (milisaniye cinsinden)
+
 
 
 logging:
   level:
     org.springframework.security: trace
-    org:
-      springframework:
-        security=DEBUG:
 
 server:
   port: 8080

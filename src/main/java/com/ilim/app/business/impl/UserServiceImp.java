@@ -40,9 +40,10 @@ public class UserServiceImp implements UserService {
                 if (isThere)
                     throw new EntityAlreadyExits("Change The Email");
 
-                updateIfNotNull(user::setUsername, request.getUsername());
+                updateIfNotNull(user::setUsername, request.getUserName());
                 updateIfNotNull(user::setEmail, request.getEmail());
                 updateIfNotNull(user::setPassword, request.getPassword());
+                userRepository.save(user);
                 modelMapper.forRequest().map(request, user);
 
                 return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
