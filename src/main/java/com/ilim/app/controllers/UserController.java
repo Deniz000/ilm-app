@@ -1,20 +1,13 @@
 package com.ilim.app.controllers;
 
-import com.ilim.app.business.impl.RoleServiceImpl;
-import com.ilim.app.business.impl.UserServiceImp;
 import com.ilim.app.business.services.RoleService;
 import com.ilim.app.business.services.UserService;
-import com.ilim.app.dto.user.UserRequest;
 import com.ilim.app.dto.user.UserUpdateRequest;
 import com.ilim.app.dto.user.UserWithRolesDTO;
 import com.ilim.app.entities.Role;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

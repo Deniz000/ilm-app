@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Objects;
 
 @Data
 @Entity
@@ -16,11 +15,11 @@ public class Material {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title", nullable = false)
-    private String title;
+    @Column(name = "file_name", nullable = false)
+    private String fileName;
 
-    @Column(name = "file_url", nullable = false)
-    private String fileUrl;
+    @Lob
+    private byte[] data;
 
     @ManyToOne
     @JoinColumn(name = "lesson_id", referencedColumnName = "id", nullable = false)

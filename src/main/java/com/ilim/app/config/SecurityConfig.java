@@ -25,8 +25,6 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()// Belirli endpoint'lere izin ver
-                        .requestMatchers("/api/users/update").permitAll()
-                        .requestMatchers("/**").permitAll()// Belirli endpoint'lere izin ver
                         .requestMatchers( "/favicon.ico").permitAll()
                         .anyRequest().authenticated() // Geri kalan endpoint'ler için kimlik doğrulama iste
                 )

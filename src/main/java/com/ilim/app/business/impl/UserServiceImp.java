@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
+
 import static com.ilim.app.core.util.EntityUpdateUtil.*;
 
 @Slf4j
@@ -29,36 +31,25 @@ public class UserServiceImp implements UserService {
         UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
     }
+
     @Override
     public UserWithRolesDTO updateUser(Long id, UserUpdateRequest request) {
-        int attempts = 0;
-        final int maxAttempts = 5;
-        while (attempts < maxAttempts) {
-            try {
-                UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
-                boolean isThere = validationHelper.getUserValidator().validateByEmail(request.getEmail());
-                if (isThere)
-                    throw new EntityAlreadyExits("Change The Email");
+        try {
+            UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
+            boolean isThere = validationHelper.getUserValidator().validateByEmail(request.getEmail());
+            if (isThere)
+                throw new EntityAlreadyExits("Change The Email");
 
-                updateIfNotNull(user::setUsername, request.getUserName());
-                updateIfNotNull(user::setEmail, request.getEmail());
-                updateIfNotNull(user::setPassword, request.getPassword());
-                userRepository.save(user);
-                modelMapper.forRequest().map(request, user);
+            updateIfNotNull(user::setUsername, request.getUserName());
+            updateIfNotNull(user::setEmail, request.getEmail());
+            updateIfNotNull(user::setPassword, request.getPassword());
+            userRepository.save(user);
 
-                return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
-            } catch (EntityAlreadyExits ex) {
-                attempts++;
-                if (attempts >= maxAttempts) {
-                    throw new RuntimeException("Max retry attempts reached. Unable to update user.", ex);
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
+            return modelMapper.forResponse().map(user, UserWithRolesDTO.class);
+        } catch (EntityAlreadyExits ignored) {
+
         }
+
         throw new RuntimeException("Unexpected error occurred.");
     }
 
@@ -68,6 +59,8 @@ public class UserServiceImp implements UserService {
         UserEntity user = validationHelper.getIfExistsById(UserEntity.class, id);
         userRepository.delete(user);
     }
+
+
 //    @Override
 //    public List<UserWithRolesDTO> getAllUsers() {
 //        List<Object[]> results = userRepository.fetchUsersWithRoles();

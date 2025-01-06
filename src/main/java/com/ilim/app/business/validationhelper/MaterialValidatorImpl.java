@@ -23,7 +23,7 @@ public class MaterialValidatorImpl implements MaterialValidator {
 
     @Override
     public boolean validateByName(String name) {
-        return repository.existsMaterialByTitle(name);
+        return repository.existsMaterialByFileName(name);
     }
 
     @Override
@@ -34,7 +34,7 @@ public class MaterialValidatorImpl implements MaterialValidator {
 
     @Override
     public Material getIfExistsByName(String name) {
-        return repository.findMaterialByTitle(name)
+        return repository.findMaterialByFileName(name)
                 .orElseThrow(() -> new MaterialNotFoundException(name + " material not found"));
     }
 

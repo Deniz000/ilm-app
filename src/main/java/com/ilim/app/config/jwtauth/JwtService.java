@@ -1,6 +1,5 @@
 package com.ilim.app.config.jwtauth;
 
-import com.ilim.app.entities.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.time.Clock;
-import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;

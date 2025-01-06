@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MaterialRepository extends JpaRepository<Material, Long> {
-    boolean existsMaterialByTitle(String title);
+    boolean existsMaterialByFileName(String fileName);
     Optional<List<Material>> findMaterialByLessonId(Long lessonId);
-    Optional<Material> findMaterialByTitle(String title);
+
+    Optional<Material> findMaterialByFileName(String fileName);
 }

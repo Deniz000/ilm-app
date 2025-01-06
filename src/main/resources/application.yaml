@@ -17,6 +17,10 @@ spring:
     username: root
     password: 12345Gulo
 
+  servlet:
+    multipart:
+         max-file-size: 10MB
+
   main:
     allow-bean-definition-overriding: true
 
